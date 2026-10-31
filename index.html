@@ -1,584 +1,98 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>FRAME / LAB — Real 3D Talent (V13)</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-:root{--bg:#0f1114;--bar:#16191d;--panel:#191c21;--panel2:#20242a;--line:#2c323a;--line2:#38404a;--text:#f4f4f2;--muted:#969da6;--quiet:#666f79;--accent:#e9c47c;--accent2:#f6dda8;--blue:#8db4e3;--green:#9bc2a3;--red:#e5a08c;--radius:12px;--font:'Heebo',system-ui,Arial,sans-serif;--mono:'DM Mono',ui-monospace,monospace}
-*{box-sizing:border-box}html,body{height:100%;min-height:0;margin:0;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-svg.ico{width:18px;height:18px;stroke:currentColor;stroke-width:1.65;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.ico.small{width:15px;height:15px}.mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}.muted{color:var(--muted)}.eyebrow{font-size:10px;text-transform:uppercase;font-family:var(--mono);letter-spacing:1.3px;color:var(--quiet)}
-#app{height:100dvh;min-height:570px;display:grid;grid-template-rows:65px minmax(0,1fr) 34px}
-.topbar{grid-row:1;display:flex;align-items:center;gap:22px;padding:0 22px;background:#14171b;border-bottom:1px solid var(--line);direction:ltr}
-.logo{display:flex;align-items:center;gap:10px;min-width:216px;direction:ltr}.brandMark{height:34px;width:34px;border:1px solid #917d59;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:21px;line-height:1;font-weight:500;background:linear-gradient(135deg,#2c2924,#16191d)}.brand{font-family:var(--mono);font-size:17px;font-weight:500;letter-spacing:1.2px;color:#faf8f1;white-space:nowrap}.brand b{color:var(--accent);font-weight:500}.brandSub{font-size:9px;color:#7e868e;letter-spacing:1.5px;margin-top:2px}
-.topProject{flex:1;display:flex;align-items:center;gap:14px;direction:rtl}.topProject .slash{height:25px;width:1px;background:#343942}.topProject strong{font-size:14px;font-weight:600}.topProject span{font-size:12px;color:#8a9198}.topActions{display:flex;gap:8px;align-items:center;direction:rtl}
-.btn{border:1px solid var(--line);background:#24282e;border-radius:8px;color:var(--text);padding:8px 11px;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;min-height:34px;transition:.14s}.btn:hover{background:#323840;border-color:#505a66}.btn.primary{background:var(--accent);border-color:var(--accent);color:#191814;font-weight:700}.btn.primary:hover{background:#f2d394}.btn.ghost{background:transparent}.btn.iconBtn{width:35px;height:35px;padding:0}
-.workspace{min-height:0;display:grid;grid-template-columns:248px minmax(390px,1fr) 306px;direction:ltr}
-.workspace > *{min-height:0}.leftPanel{grid-column:1;background:var(--bar);border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;direction:rtl}.panelHead{padding:20px 17px 15px;border-bottom:1px solid var(--line)}.panelTitle{font-weight:700;font-size:16px;display:flex;justify-content:space-between;align-items:center}.panelHead p{margin:5px 0 0;color:var(--muted);font-size:11px}.sideScroll{overflow:auto;padding:15px 14px 25px;scrollbar-width:thin;scrollbar-color:#404752 transparent}.sectionHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;margin-top:10px}.sectionHead strong{font-size:12px}.tinyCount{font-family:var(--mono);font-size:10px;color:var(--quiet)}
-.searchBox{height:36px;border:1px solid var(--line);background:#22262b;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 10px;color:#838b92;margin-bottom:15px}.searchBox input{width:100%;background:transparent;border:0;outline:none;color:var(--text);font-size:12px;min-width:0}.searchBox input::placeholder{color:#6f777f}
-.category{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gear{min-width:0;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;gap:12px;min-height:93px;padding:12px;border:1px solid #30353d;background:#22262c;border-radius:10px;color:#f3f3f2;text-align:right}.gear:hover{border-color:#ae9362;background:#292c30}.gear .gearIcon{color:#d6c097;height:23px;display:flex;align-items:center}.gear span{font-size:11px;font-weight:500;line-height:1.15}.gear small{color:#838d96;font:9px var(--mono)}.categoryTitle{margin:20px 0 10px;font-size:11px;font-weight:700;color:#9fa5ac;display:flex;justify-content:space-between}.sideDivider{height:1px;background:var(--line);margin:20px 0}
-.sceneEntry{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;margin:3px 0;border:1px solid transparent;border-radius:7px;color:#b3bac2;cursor:pointer;gap:8px}.sceneEntry:hover{background:#252a31}.sceneEntry.selected{background:#30302a;border-color:#6c6049;color:#fff}.sceneEntry strong{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sceneEntry .number{font:10px var(--mono);color:#777f87}.sceneEntry .dot{height:7px;width:7px;border-radius:50%;background:#d4b87c;flex:0 0 7px}.sceneEntry.cam .dot{background:#80ace3}.sceneEntry.actor .dot{background:#d3a58b}.sceneEntry.flag .dot{background:#7a828a}
-.sideInputRow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.fieldMini{min-width:0;display:flex;flex-direction:column;gap:5px}.fieldMini label{color:#8e969e;font-size:10px}.fieldMini input{background:#252a30;border:1px solid #353c44;border-radius:6px;width:100%;color:#f1f1ee;padding:8px 5px;font:11px var(--mono);text-align:center;direction:ltr}.sideHint{color:#858d95;font-size:11px;line-height:1.55;margin:8px 0 0}.sideUpload{display:flex;align-items:center;gap:9px;border:1px dashed #49515b;border-radius:9px;padding:11px;cursor:pointer;font-size:11px;color:#cbd0d4}.sideUpload:hover{border-color:var(--accent)}.sideUpload svg{color:var(--accent)}.sideUpload input{display:none}
-.main{grid-column:2;direction:rtl;display:flex;flex-direction:column;min-width:0;min-height:0;background:#101216}.stageTopbar{height:66px;min-height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #262b32;gap:15px}.stageName{display:flex;gap:12px;align-items:center;min-width:0}.sceneBadge{background:#343229;color:var(--accent);font:10px var(--mono);padding:7px 9px;border-radius:5px;letter-spacing:.5px}.stageName h2{margin:0;font-size:15px;font-weight:600;white-space:nowrap}.stageName p{margin:2px 0 0;color:#77818b;font:10px var(--mono);direction:ltr}.segmented{display:flex;gap:3px;padding:4px;background:#20242a;border:1px solid #343940;border-radius:9px}.segmented button{min-width:58px;border:0;background:transparent;color:#949da6;border-radius:6px;padding:7px 11px;font-size:11px}.segmented button.active{background:#3b4149;color:white;box-shadow:0 1px 5px #0003}
-.stageStack{min-height:0;flex:1;display:grid;grid-template-rows:minmax(230px, .98fr) minmax(250px,1.02fr);gap:12px;padding:13px 15px 14px}.stageStack.planMode{display:block}.stageStack.planMode #shotPanel{display:none}.stageStack.planMode #planPanel{height:100%}.stageStack.threeMode{display:block}.stageStack.threeMode #planPanel{display:none}.stageStack.threeMode #shotPanel{height:100%}
-.stagePanel{min-width:0;min-height:0;border:1px solid #30353c;border-radius:11px;overflow:hidden;background:#1c2025;display:flex;flex-direction:column}.stagePanelHeader{min-height:41px;height:41px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;background:#1d2127;border-bottom:1px solid #353a41;gap:12px}.stagePanelHeader .secLabel{font:10px var(--mono);color:#b8c0c7;letter-spacing:1px;direction:ltr;display:flex;align-items:center;gap:8px}.point{width:6px;height:6px;border-radius:50%;background:var(--accent)}.point.blue{background:var(--blue)}.stagePanelHeader .secEnd{display:flex;align-items:center;gap:10px;font:10px var(--mono);color:#8c959f;direction:ltr}.stagePanelHeader .secEnd button{border:0;background:transparent;color:#b3bac0;padding:4px;display:flex;align-items:center}.stagePanelHeader .secEnd button:hover{color:var(--accent)}
-#cameraArea{position:relative;min-height:0;flex:1;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#3e443d,#101315 85%);display:flex;justify-content:center;align-items:center}.stageCanvas{width:100%;height:100%;display:block;touch-action:none}#pv{position:absolute;inset:0}#c3{display:none;position:absolute;inset:0}#shotPanel.is3d #pv{display:none}#shotPanel.is3d #c3{display:block}.monitorHUD{position:absolute;pointer-events:none;inset:0}.frameMask{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(2,5,8,.36),transparent 20%,transparent 75%,rgba(2,5,8,.7));pointer-events:none}.monitorTop{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;gap:8px;direction:ltr}.hudChip{background:#0b0c0eb0;border:1px solid #ffffff1a;border-radius:5px;color:#f7f6f0;backdrop-filter:blur(5px);padding:5px 8px;font:10px var(--mono);white-space:nowrap}.recDot{width:6px;height:6px;background:#e06e69;display:inline-block;border-radius:50%;margin-right:6px}.monitorBottom{position:absolute;bottom:15px;left:17px;right:17px;display:flex;justify-content:space-between;gap:8px;direction:ltr}.hudStats{font:10px var(--mono);color:#f8f4eb;opacity:.95}.guide{position:absolute;inset:11% 10%;border:1px solid #fff2;pointer-events:none}.guide:before,.guide:after{content:"";position:absolute;height:8px;width:8px;border:1px solid #fff6}.guide:before{top:-1px;left:-1px;border-right:0;border-bottom:0}.guide:after{right:-1px;bottom:-1px;border-left:0;border-top:0}.crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;opacity:.28}.crosshair:before,.crosshair:after{content:"";position:absolute;background:white}.crosshair:before{top:12px;left:0;width:26px;height:1px}.crosshair:after{top:0;left:12px;width:1px;height:26px}.referenceView{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#101315;display:none;z-index:2}.referenceNotice{position:absolute;z-index:5;top:58px;right:15px;background:#15191ee8;border:1px solid #8b7752;color:#ecd49c;padding:8px 11px;font:10px var(--mono);border-radius:6px;display:none}.fallbackHint{position:absolute;bottom:40px;right:16px;font-size:10px;color:#fbf6ee;background:#121417b8;padding:6px 8px;border-radius:5px;display:none}
-#planPanel{background:#f7f6f3}#planPanel .stagePanelHeader{background:#f6f5f1;border-bottom:1px solid #e4e0d8}#planPanel .stagePanelHeader .secLabel{color:#444844}#planPanel .stagePanelHeader .secEnd{color:#676c69}#planPanel .stagePanelHeader .secEnd button{color:#6b6d69}#planArea{position:relative;min-height:0;flex:1;background:#faf9f6;overflow:hidden}#plan{width:100%;height:100%;display:block;touch-action:none}#plan .handler{cursor:grab}.planScale{position:absolute;bottom:12px;left:14px;display:flex;align-items:center;gap:4px;direction:ltr}.planScale button{border:1px solid #dddcd5;background:#fffdfa;color:#6c6f70;border-radius:6px;width:27px;height:27px;font-size:17px;display:flex;justify-content:center;align-items:center}.planScale button:hover{background:#eee8dc}.planScale span{font:10px var(--mono);color:#606463;margin:0 5px}.planRotationHint{position:absolute;top:42px;left:14px;z-index:2;display:none;align-items:center;gap:7px;direction:rtl;border:1px solid #a7c5e2;background:#eef6ffed;color:#28547d;border-radius:7px;padding:8px 10px;font-size:11px;box-shadow:0 2px 9px #0000000c;pointer-events:none}.planRotationHint.active{display:flex}.planRotationHint .blueDot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#3c86cc;box-shadow:0 0 0 3px #b4dafa}.planRotationHint.aim{background:#dcefff;border-color:#3c86cc}.planNotes{position:absolute;top:11px;right:14px;font:10px var(--mono);color:#80847f;letter-spacing:.4px;direction:ltr;pointer-events:none}
-.rightPanel{grid-column:3;direction:rtl;min-width:0;min-height:0;background:var(--bar);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}.inspectorHeader{padding:19px 17px 15px;border-bottom:1px solid var(--line)}.inspectorHeader h3{font-size:16px;margin:0 0 5px}.inspectorHeader p{margin:0;color:#929ca5;font-size:11px}.inspectorScroll{overflow:auto;flex:1;scrollbar-width:thin;scrollbar-color:#41464d transparent}.insBlock{padding:18px 17px 17px;border-bottom:1px solid #2a3038}.insTitle{font-size:11px;letter-spacing:.3px;color:#f3f2ee;font-weight:700;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.insTitle small{color:#878f97;font:9px var(--mono);font-weight:400}.selectedName{font-size:16px;font-weight:700;margin:0 0 4px}.selectedType{font:10px var(--mono);color:#a6acb0;direction:ltr}.prop{margin:13px 0}.propHeader{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px}.propHeader label{color:#9fa6ad;font-size:11px}.propHeader output{font:11px var(--mono);color:#ebe1cb;direction:ltr}.prop input[type=range]{width:100%;height:3px;accent-color:#d9bb82;cursor:pointer}.controlSelect,.controlText{width:100%;background:#252a30;color:#f0f0ed;border:1px solid #3b414a;border-radius:7px;padding:10px 11px;min-height:37px}.controlSelect{direction:ltr;text-align:left}.insGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dataChip{border:1px solid #393f46;background:#24292e;border-radius:8px;padding:12px 9px}.dataChip b{font:14px var(--mono);color:#fff;display:block;direction:ltr}.dataChip span{font-size:10px;color:#9fa7ad}.camAimControls{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px}.camAimControls button{min-height:35px;border-radius:7px;background:#273441;color:#cbdff1;border:1px solid #47617b;font-size:11px;cursor:pointer;padding:8px 10px;flex:1}.camAimControls button:hover{background:#354b60}.camAimControls button.aimActive{background:#38618c;color:#fff;border-color:#8ab6dc}.camAimControls .wide{flex:1 1 100%}.camAimCopy{color:#a8b7c7;font-size:11px;line-height:1.7;margin:0 0 10px}.camAimCopy b{color:#b9d9fb;font-weight:700}.smallBtn{width:100%;margin-top:12px;border:1px solid #5a4742;background:#322825;color:#e4a59b;border-radius:7px;padding:8px}.smallBtn:hover{background:#48332e}.hint{line-height:1.65;font-size:11px;color:#929ba4}.notice{border:1px solid #665a43;background:#2d2b24;border-radius:8px;padding:11px;font-size:11px;color:#d5c5a3;line-height:1.6;margin-top:10px}.emptyState{padding:15px;text-align:center;color:#858e98;font-size:12px}
-.statusbar{grid-row:3;background:#15181c;border-top:1px solid #293039;display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:12px;direction:ltr;font:10px var(--mono);color:#7e8792}.statusRight{display:flex;align-items:center;gap:11px;white-space:nowrap}.statusDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#b8b486;margin-right:5px}.toast{position:fixed;bottom:47px;left:50%;transform:translateX(-50%) translateY(12px);opacity:0;pointer-events:none;z-index:20;border:1px solid #4b514f;background:#2b3032;box-shadow:0 8px 40px #0007;border-radius:9px;padding:11px 15px;color:#f2f0ea;transition:.2s;max-width:90vw}.toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}.referenceThumbs{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.referenceThumbs img{height:44px;width:50px;object-fit:cover;border-radius:4px;border:1px solid #4c545c;cursor:pointer}
-@media(max-width:1220px){.workspace{grid-template-columns:208px minmax(360px,1fr) 266px}.topbar{gap:12px;padding:0 12px}.logo{min-width:180px}.brand{font-size:15px}.stageStack{padding:9px;gap:9px}.insBlock{padding:14px 12px}.gear{padding:9px;min-height:83px}}
-.drawerBackdrop,.inspectorClose,.floatingInspectorBtn{display:none}.libraryShortcut{display:none}
-.cameraQuickTools{display:none;position:absolute;z-index:6;left:10px;bottom:51px;direction:rtl;background:#ffffffef;border:1px solid #cbd9e5;border-radius:9px;box-shadow:0 4px 15px #17395b25;padding:4px;gap:3px}
-.cameraQuickTools.visible{display:flex}
-.cameraQuickTools button{background:transparent;border:1px solid transparent;border-radius:6px;color:#42617c;padding:7px 10px;font:600 11px var(--font);white-space:nowrap;cursor:pointer}
-.cameraQuickTools button.active{background:#2c6f9e;border-color:#2c6f9e;color:#fff}
-#plan{cursor:grab}
-.planRotationHint{display:none!important}
-.libraryBackdrop{display:none}
-@media(max-width:910px){
- html,body{height:100%;max-width:none;overflow:hidden}
- #app{display:grid;width:100%;max-width:100%;height:100dvh;min-height:0;grid-template-rows:61px minmax(0,1fr) 28px;overflow:hidden}
- .workspace{width:100%;height:100%;max-width:100%;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(205px,34vw,278px);grid-template-rows:minmax(0,1fr);overflow:hidden;direction:ltr}
- .workspace>.main{grid-column:1;grid-row:1;order:initial;width:auto;min-height:0;min-width:0;max-width:none;overflow:hidden}
- .workspace>.rightPanel{grid-column:2;grid-row:1;order:initial;position:relative;top:auto;right:auto;bottom:auto;left:auto;display:flex;transform:none!important;width:auto;max-width:none;min-width:0;min-height:0;height:auto;overflow:hidden;border:0;border-left:1px solid var(--line);box-shadow:none;z-index:auto}
- .rightPanel .inspectorScroll{min-height:0;overflow-y:auto;overscroll-behavior:contain}
- .workspace>.leftPanel{display:flex;position:fixed;left:0;top:61px;bottom:28px;right:auto;width:min(310px,90vw);min-width:0;height:auto;z-index:32;background:#16191d;transform:translateX(-104%);transition:transform .2s ease;box-shadow:15px 5px 30px #0008;overflow:hidden;border-right:1px solid var(--line)}
- body.libraryOpen .workspace>.leftPanel{transform:translateX(0)}
- .libraryBackdrop{display:block;position:fixed;inset:61px 0 28px 0;background:#05060788;z-index:31;opacity:0;pointer-events:none;transition:opacity .18s}
- body.libraryOpen .libraryBackdrop{opacity:1;pointer-events:auto}
- .libraryShortcut{display:inline-flex;order:1;flex-shrink:0;margin-left:auto;background:#282e33;color:#efd1a0;font-size:11px;min-height:30px;padding:6px 9px}
- .topActions{order:2;margin-left:0;flex-shrink:0}
- .topbar{height:61px;min-width:0;overflow:hidden}
- .stageStack{min-height:0;min-width:0;height:auto;grid-template-rows:minmax(150px,.92fr) minmax(190px,1.08fr);padding:6px;gap:7px}
- .stageTopbar{min-height:54px;height:auto;padding:7px 8px;gap:6px;flex-wrap:wrap;align-content:center}
- .stageTopbar>div:last-child{width:auto;margin-inline-start:auto;gap:0}
- .stageName h2{font-size:11px}
- .stageName p{font-size:9px}
- .segmented{padding:2px;gap:1px}
- .segmented button{font-size:10px;min-width:0;padding:5px 7px}
- .stagePanelHeader{padding:0 6px}
- .stagePanelHeader .secLabel{font-size:9px;letter-spacing:0}
- .stagePanelHeader .secEnd{font-size:9px}
- .stagePanelHeader #planActionHint,.stagePanelHeader #shotHeaderText{display:none}
- .statusbar{min-height:28px;height:28px;padding:0 8px;font-size:9px}
- .statusRight{display:none}
- .inspectorHeader{padding:12px 9px}
- .inspectorHeader h3{font-size:13px}
- .inspectorHeader p{font-size:10px}
- .insBlock{padding:12px 10px}
- .prop{margin:9px 0}
- .controlSelect,.controlText{min-height:34px;padding:7px 6px}
- .insGrid{grid-template-columns:1fr}
- .cameraQuickTools{left:6px;bottom:45px}
- .cameraQuickTools button{font-size:10px;padding:6px 7px}
- .planScale{left:7px;bottom:9px}
- .planScale button{width:23px;height:23px}
- .planNotes{display:none}
- .planRotationHint{display:none!important}
- .camAimControls button{padding:8px 4px;font-size:10px}
- .camDirectionTip{padding:7px;font-size:10px}
- .monitorHUD .hudChip{font-size:8px;padding:3px 5px}
- .monitorHUD .hudStats{font-size:8px}
- #cameraArea .cameraStatusPill{font-size:9px;right:6px;bottom:36px;padding:3px 4px}
-}
-@media(max-width:620px){
- .workspace{grid-template-columns:minmax(0,1fr) clamp(170px,44vw,212px)}
- .stageTopbar .stageName p{display:none}
- .stageTopbar{height:auto;min-height:49px;flex-wrap:wrap}
- .stageName{gap:5px}
- .stageName h2{display:none}
- .sceneBadge{font-size:9px;padding:5px}
- .topActions #loadProject{display:none}
- .brand{font-size:12px}
- .topbar{gap:4px;padding:0 5px}
- .topActions .btn{font-size:10px;padding:4px 5px}
- .topActions .btn.primary{max-width:87px;white-space:normal;line-height:1.2}
- .inspectorHeader p{display:none}
- .stagePanelHeader{height:35px;min-height:35px}
- .stagePanelHeader .secLabel{font-size:8px}
- .stageStack{grid-template-rows:minmax(190px,.92fr) minmax(250px,1.08fr)}
- .camAimControls{gap:3px}
- .camAimControls button{font-size:9px}
- .camAimCopy{font-size:10px}
- .cameraQuickTools button{padding:5px 5px;font-size:9px}
- .topActions .btn.primary svg{display:none}
- .topActions .btn svg{width:12px}
-}
-
-.planRotationHint{max-width:196px;white-space:normal;line-height:1.5;top:50px;font-size:10px;padding:6px 8px}
-@media(max-width:910px){html,body,#app{max-width:100vw;width:100%;overflow-x:hidden}.topbar{min-width:0;gap:7px;padding:0 9px}.logo{min-width:0;flex-shrink:0}.brand{font-size:12px;letter-spacing:.2px}.brandMark{width:29px;height:29px;flex-shrink:0}.brandSub{display:none}.topProject{display:none}.topActions{gap:4px;margin-left:auto}.topActions .btn{font-size:11px;padding:6px;min-height:30px;white-space:nowrap}.topActions #newProject{display:none}.workspace,.main,.stageStack{width:100%;min-width:0}.stageTopbar{min-width:0;overflow:hidden}.rightPanel{right:0;left:auto;width:min(350px,92vw);max-width:92vw;box-sizing:border-box}.drawerBackdrop{left:0;right:0}.category{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:440px){.topActions .btn.primary{font-size:10px;padding:5px}.topActions .btn svg{width:13px}.stageName h2{font-size:11px}.segmented button{min-width:42px;padding:6px}.drawerToggle{padding:6px}}
-
-.drawerToggle,.floatingInspectorBtn,.drawerBackdrop,.inspectorClose{display:none!important}
-.libraryShortcut{display:none}
-.cameraQuickTools{display:none;position:absolute;z-index:6;left:10px;bottom:51px;direction:rtl;background:#ffffffef;border:1px solid #cbd9e5;border-radius:99px;box-shadow:0 4px 15px #17395b25;padding:4px;gap:3px}
-.cameraQuickTools.visible{display:flex}
-.cameraQuickTools button{background:transparent;border:1px solid transparent;border-radius:6px;color:#42617c;padding:7px 10px;font:600 11px var(--font);white-space:nowrap;cursor:pointer}
-.cameraQuickTools button.active{background:#2c6f9e;border-color:#2c6f9e;color:#fff}
-#plan{cursor:grab}
-.planRotationHint{display:none!important}
-.libraryBackdrop{display:none}
-
-.lensHero{border:1px solid #51627a;background:linear-gradient(125deg,#22303e,#1a2029 85%);border-radius:10px;padding:13px;margin-bottom:14px}
-.lensHeroHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.lensHeroHead strong{font-size:12px;color:#e4eff9}.lensHeroHead span{color:#91b8e3;font:9px var(--mono)}
-.lensHero .model{font:13px var(--mono);color:#fff;direction:ltr;text-align:left;margin:9px 0 5px;overflow-wrap:anywhere}
-.lensHero .meta{font:10px var(--mono);color:#afbdcc;direction:ltr;text-align:left}
-.lensSelectors{display:grid;grid-template-columns:1fr;gap:9px}.lensSelectors label{display:block;font-size:11px;color:#a3b4c8;margin-bottom:5px}
-.lensSelectors select{width:100%;background:#252d38;border:1px solid #465568;border-radius:7px;color:#f5f5f5;padding:9px;direction:ltr;text-align:left;font:11px var(--mono)}
-.lensSearch{display:flex;align-items:center;gap:6px;border:1px solid #435165;border-radius:7px;background:#242b33;padding:0 9px;margin-top:11px}
-.lensSearch input{background:transparent;border:0;color:#fff;padding:10px 3px;min-width:0;width:100%;outline:0;font:11px var(--mono);direction:ltr}
-.lensResults{max-height:155px;overflow-y:auto;display:none;border:1px solid #465568;border-radius:7px;background:#202833;margin-top:5px}.lensResults.hasResults{display:block}
-.lensResults button{display:block;width:100%;border:0;border-bottom:1px solid #374352;color:#dde9f5;background:transparent;text-align:left;direction:ltr;padding:9px;font:11px var(--mono)}.lensResults button:hover{background:#35475b}
-.lensFoot{display:flex;justify-content:space-between;gap:5px;align-items:center;margin:9px 0 0;color:#a0acbb;font:10px var(--mono);direction:ltr}.lensFoot a{color:#abcdeb;text-decoration:none;border-bottom:1px solid #517ba2}.lensFoot a:hover{color:#fff}
-.lensCompatibility{border-radius:7px;padding:10px 11px;margin:10px 0 0;font-size:11px;line-height:1.6;border:1px solid #3d5945;background:#23352b;color:#c9ebd5}.lensCompatibility.warn{border-color:#80683c;background:#3b3226;color:#f3d8a2}.lensCompatibility.danger{border-color:#865650;background:#3b2a29;color:#ffc8bf}
-.lensInfoNote{font-size:10px;color:#9cabbc;line-height:1.7;margin:10px 0 0}
-.lensRangeChip{display:flex;justify-content:space-between;gap:6px;margin:8px 0 5px;color:#a3b0c1;font:10px var(--mono)}
-
-.dofControl{border:1px solid #475b68;border-radius:9px;padding:12px;background:#202a31;margin-top:11px}
-.dofControlTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:600;color:#d2eaff}
-.dofSwitch{display:flex;align-items:center;gap:6px;color:#dfedf9;cursor:pointer;white-space:nowrap}
-.dofSwitch input{accent-color:#8cb8e5;width:16px;height:16px}
-.focusButtons{display:flex;gap:7px;margin-top:11px}
-.focusButtons button{flex:1;min-height:34px;background:#2c4255;border:1px solid #557d9e;border-radius:7px;color:#d8edff;font-size:11px;cursor:pointer}
-.focusButtons button:hover{background:#38566f}
-.dofFeedback{font:10px var(--mono);direction:ltr;color:#a9c4d7;margin:9px 0 0}
-.dofNote{font-size:10px;color:#94a8b5;line-height:1.65;margin:7px 0 0}
-.dofBadge{border:1px solid #668fac90;background:#142330c9;padding:4px 8px;border-radius:5px;color:#c5e3f6;font:9px var(--mono);white-space:nowrap}
-
-.avatarPreviewStatus{position:absolute;z-index:3;top:48px;left:14px;pointer-events:none;font:9px var(--mono);letter-spacing:.5px;color:#d5e7fa;background:#172633ce;padding:5px 8px;border:1px solid #47637a;border-radius:4px}
-.avatarPreviewStatus[data-status=ok]{color:#bfedc7;border-color:#438761;background:#142b22cd}
-.avatarPreviewStatus[data-status=error]{color:#ffcfad;border-color:#a26a4a;background:#302219cd}
-
-.modelStatus{border:1px solid #516579;background:#23303d;border-radius:9px;padding:11px 12px;margin:12px 0;color:#cbe0f2;font-size:11px;line-height:1.5}
-.modelStatus[data-status=ok]{border-color:#477b60;background:#1d3329;color:#bde6c8}
-.modelStatus[data-status=error]{border-color:#876445;background:#3d2c20;color:#f1c9a0}
-.uploadAvatar{margin:10px 0;display:flex;flex-direction:column;gap:5px;border:1px dashed #637188;border-radius:9px;background:#25303d;padding:13px;cursor:pointer}
-.uploadAvatar b{font-size:11px;color:#e8edf2}.uploadAvatar span{font-size:10px;color:#b0bdca}.uploadAvatar input{margin-top:6px;max-width:100%;font-size:10px;color:#c3d4e6}
-.insBlock .hint a{color:#eac984;text-decoration:underline}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>תצוגת מצלמה</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    .camera-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    video {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 8px;
+      background-color: #000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #error-msg {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-<symbol id="i-camera" viewBox="0 0 24 24"><path d="M14 4h-4l-2 3H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
-<symbol id="i-light" viewBox="0 0 24 24"><path d="M9 3l10 4-4 10-10-4zM5 13l-2 5M15 17l3 4M4 21h17M6 8L2 6"/></symbol>
-<symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M7 22v-7l-2-2 3-4h8l3 4-2 2v7M9 15l-1 7m7-7 1 7"/></symbol>
-<symbol id="i-flag" viewBox="0 0 24 24"><path d="M3 4h14v12H3zM10 16v5M5 21h10"/></symbol>
-<symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/></symbol>
-<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
-<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 16l-5-5L5 21"/></symbol>
-<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
-<symbol id="i-save" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H3V3zM7 3v7h10V3M7 21v-8h10v8"/></symbol>
-<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></symbol>
-<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5"/></symbol>
-<symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
-<symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 3 7M3 4v7h7"/></symbol>
-<symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 6-10 6L2 8zm-10 10 10 6 10-6M2 16l10 6 10-6"/></symbol>
-</svg>
-<div id="app">
-  <header class="topbar">
-    <div class="logo"><div class="brandMark">⌗</div><div><div class="brand">FRAME<b>/</b>LAB</div><div class="brandSub">CINEMATOGRAPHY WORKSPACE</div></div></div>
-    <div class="topProject"><strong id="topName">סצנת דיאלוג · מטבח</strong><div class="slash"></div><span>PREVIS STUDIO <span class="mono">/ 01</span></span></div>
-    <button class="btn libraryShortcut" id="libraryShortcut" type="button" aria-label="פתח ספריית ציוד">+ ציוד</button>
-    <div class="topActions">
-      <button class="btn ghost" id="newProject"><svg class="ico small"><use href="#i-plus"/></svg> חדש</button>
-      <button class="btn" id="loadProject"><svg class="ico small"><use href="#i-reset"/></svg> טען</button>
-      <button class="btn" id="saveProject"><svg class="ico small"><use href="#i-save"/></svg> שמור</button>
-      <button class="btn primary" id="exportBoard"><svg class="ico small"><use href="#i-download"/></svg> ייצוא שוט + תוכנית</button>
-    </div>
-  </header>
-  <div class="workspace">
-    <aside class="leftPanel">
-      <div class="panelHead"><div class="panelTitle">ספריית ציוד <span class="mono muted" style="font-size:10px">LIBRARY</span></div><p>בחרו פריט והוסיפו אותו לסט</p></div>
-      <div class="sideScroll">
-        <label class="searchBox"><svg class="ico small"><use href="#i-search"/></svg><input id="gearSearch" placeholder="חיפוש מצלמה, תאורה, ציוד..." aria-label="חיפוש ציוד"></label>
-        <div class="sectionHead"><strong>מצלמה ותאורה</strong><span class="tinyCount">CAMERA / LIGHT</span></div>
-        <div class="category" id="primaryGear">
-          <button class="gear" data-add="cam" data-search="מצלמה camera sony arri canon"><span class="gearIcon"><svg class="ico"><use href="#i-camera"/></svg></span><span>מצלמה</span><small>CAMERA</small></button>
-          <button class="gear" data-add="soft" data-search="סופטבוקס softbox aputure nova key light"><span class="gearIcon"><svg class="ico"><use href="#i-light"/></svg></span><span>סופטבוקס</span><small>SOFT LIGHT</small></button>
-          <button class="gear" data-add="spot" data-search="פנס ספוט spotlight fresnel beam"><span class="gearIcon"><svg class="ico"><use href="#i-light"/></svg></span><span>פנס ספוט</span><small>SPOTLIGHT</small></button>
-          <button class="gear" data-add="tube" data-search="טובה astera tube led"><span class="gearIcon"><svg class="ico"><use href="#i-light"/></svg></span><span>טובת LED</span><small>LED TUBE</small></button>
-        </div>
-        <div class="categoryTitle">גריפ וסט <span class="mono">GRIP / SET</span></div>
-        <div class="category">
-          <button class="gear" data-add="actor" data-actor="male" data-search="שחקן actor character man male גבר"><span class="gearIcon"><svg class="ico"><use href="#i-person"/></svg></span><span>דמות גבר</span><small>MALE TALENT</small></button>
-          <button class="gear" data-add="actor" data-actor="female" data-search="שחקנית actor character woman female אישה"><span class="gearIcon"><svg class="ico"><use href="#i-person"/></svg></span><span>דמות אישה</span><small>FEMALE TALENT</small></button>
-          <button class="gear" data-add="flag" data-search="דגל נגטיב פיל black negative fill flag"><span class="gearIcon"><svg class="ico"><use href="#i-flag"/></svg></span><span>נגטיב פיל</span><small>BLACK FLAG</small></button>
-          <button class="gear" data-add="bounce" data-search="רפלקטור בונס bounce reflector"><span class="gearIcon"><svg class="ico"><use href="#i-flag"/></svg></span><span>רפלקטור</span><small>BOUNCE</small></button>
-          <button class="gear" data-add="table" data-search="שולחן ריהוט table furniture"><span class="gearIcon"><svg class="ico"><use href="#i-box"/></svg></span><span>שולחן</span><small>FURNITURE</small></button>
-        </div>
-        <div class="sideDivider"></div>
-        <div class="sectionHead"><strong>פריטים בסצנה</strong><span class="tinyCount" id="itemCounter">00 ITEMS</span></div>
-        <div id="sceneList"></div>
-        <div class="sideDivider"></div>
-        <div class="sectionHead"><strong>מידות החלל</strong><span class="tinyCount">METERS</span></div>
-        <div class="sideInputRow"><div class="fieldMini"><label>אורך</label><input type="number" id="rd" min="2" max="40" step="0.1" value="5"></div><div class="fieldMini"><label>רוחב</label><input type="number" id="rw" min="2" max="40" step="0.1" value="6.2"></div><div class="fieldMini"><label>גובה</label><input type="number" id="rh" min="2" max="12" step="0.1" value="3.1"></div></div>
-        <button id="applyRoom" class="btn" style="width:100%;margin-top:10px">עדכון מידות החלל</button>
-        <p class="sideHint">המידות ניתנות לעריכה ידנית. אין כרגע מדידה אוטומטית מתמונות.</p>
-        <div class="sideDivider"></div>
-        <div class="sectionHead"><strong>ייבוא לוקיישן</strong><span class="tinyCount">IMPORT</span></div>
-        <label class="sideUpload"><svg class="ico"><use href="#i-upload"/></svg><span>ייבוא מודל תלת־ממד <b class="mono">GLB / glTF</b></span><input type="file" id="glbInput" accept=".glb,.gltf"></label>
-        <label class="sideUpload" style="margin-top:8px"><svg class="ico"><use href="#i-image"/></svg><span>העלאת תמונות רפרנס</span><input type="file" id="photoInput" accept="image/*" multiple></label>
-        <div id="referenceThumbs" class="referenceThumbs"></div>
-        <p class="sideHint">תמונות נשמרות כרפרנס בלבד. שחזור AI לתלת־ממד דורש שירות נוסף ואינו פעיל בגרסה זו.</p>
-      </div>
-    </aside>
-    <main class="main">
-      <div class="stageTopbar"><div class="stageName"><span class="sceneBadge">SCENE 01</span><div><h2>תכנון השוט והעמדת התאורה</h2><p id="stageDimensions">6.2 × 5.0 × 3.1 M · PREVIS</p></div></div><div style="display:flex;align-items:center;gap:10px"><button id="openInspectorBtn" class="btn ghost drawerToggle"><svg class="ico small"><use href="#i-settings"/></svg>פרמטרי מצלמה</button><nav class="segmented" aria-label="מצב תצוגה"><button data-view="split" class="active">משולב</button><button data-view="plan">תוכנית</button><button data-view="three">תלת־ממד</button></nav></div></div>
-      <div class="stageStack" id="stageStack">
-        <section class="stagePanel" id="shotPanel">
-          <div class="stagePanelHeader"><span class="secLabel"><span class="point"></span> CAMERA MONITOR <span style="font-size:9px;color:#747e89">/ LIVE PREVIEW</span></span><div class="secEnd"><span id="shotHeaderText">SONY FX6 · 35MM</span><button id="expandShot" title="הגדל תצוגה"><svg class="ico small"><use href="#i-expand"/></svg></button></div></div>
-          <div id="cameraArea"><canvas class="stageCanvas" id="pv"></canvas><canvas class="stageCanvas" id="c3"></canvas><img class="referenceView" id="referenceView" alt="תמונת רפרנס מהלוקיישן"><button class="referenceNotice" id="referenceNotice" title="חזרה להדמיה">REFERENCE PHOTO · חזרה להדמיה ✕</button><div class="monitorHUD" id="monitorHUD"><div class="frameMask"></div><div class="guide"></div><div class="crosshair"></div><div class="monitorTop"><span class="hudChip"><span class="recDot"></span> CAM A · PREVIS</span><span style="display:flex;align-items:center;gap:6px"><span class="dofBadge" id="dofHUD">DOF · LIVE</span><span class="hudChip">16:9 · 25 FPS</span></span></div><div class="monitorBottom"><span class="hudStats" id="cameraHudLeft">35 MM · T2.8 · ISO 800</span><span class="hudStats" id="cameraHudRight">5600K · ND 0</span></div></div><div class="avatarPreviewStatus" id="avatarPreviewStatus">3D MODEL / CONNECTING</div><div class="cameraStatusPill" id="cameraStatusPill" aria-live="polite">CAMERA / AIM</div><div class="fallbackHint" id="fallbackHint">המחשה גרפית · הדמיית 3D דורשת טעינת Three.js</div></div>
-        </section>
-        <section class="stagePanel" id="planPanel">
-          <div class="stagePanelHeader"><span class="secLabel"><span class="point blue"></span> LIGHTING FLOOR PLAN <span style="font-size:9px;color:#949a96">/ TOP VIEW</span></span><div class="secEnd"><span id="planActionHint">DRAG TO POSITION</span><button id="exportPlan" title="ייצוא תוכנית"><svg class="ico small"><use href="#i-download"/></svg></button></div></div>
-          <div id="planArea"><div class="cameraQuickTools" id="cameraQuickTools"><button type="button" class="active" id="camToolMove" aria-pressed="true">✥ הזזה</button><button type="button" id="camToolRotate" aria-pressed="false">↻ סיבוב</button></div><canvas id="plan" aria-label="תוכנית תאורה ניתנת לעריכה. גרור סמל מצלמה להזזה ואת הידית הכחולה לסיבוב."></canvas><div id="planRotationHint" class="planRotationHint"><span class="blueDot"></span><span id="planRotationText">גרור את העיגול הכחול כדי לכוון את המצלמה</span></div><div class="planNotes">TOP VIEW&nbsp; / &nbsp;SCALE APPROX.</div><div class="planScale"><button id="zoomOut" aria-label="הקטנה">−</button><span id="zoomLabel">100%</span><button id="zoomIn" aria-label="הגדלה">+</button><button id="zoomReset" aria-label="איפוס">↺</button></div></div>
-        </section>
-      </div>
-    </main>
-    <aside class="rightPanel"><div class="inspectorHeader"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><h3>Inspector <span class="muted" style="font-size:10px;font-family:var(--mono)">/ PROPERTIES</span></h3><p>בחירה ועריכה של ציוד בסצנה</p></div><button id="closeInspectorBtn" class="inspectorClose" aria-label="סגירת פרמטרים">✕</button></div></div><div class="inspectorScroll" id="inspector"></div></aside>
+
+  <div class="camera-container">
+    <video id="webcam" autoplay playsinline muted></video>
+    <button id="camera-btn">הפעל מצלמה</button>
+    <p id="error-msg"></p>
   </div>
-  <div class="drawerBackdrop" id="drawerBackdrop"></div><div class="libraryBackdrop" id="libraryBackdrop"></div><button class="floatingInspectorBtn" id="floatingInspectorBtn">CAMERA / INSPECTOR</button>
-  <footer class="statusbar"><div><span class="statusDot"></span> FRAME/LAB · LOCAL PROJECT <span id="renderStatus">/ INITIALIZING</span></div><div class="statusRight"><span>CAM: DRAG BLUE DOT TO ROTATE</span><span>SCROLL: ZOOM</span><span>DEL: REMOVE</span><span id="statusItems">8 OBJECTS</span></div></footer>
-</div>
-<div class="toast" id="toast" role="status"></div>
 
-<script>
-'use strict';
-const $=id=>document.getElementById(id);
-const CAMERA_MODELS=[
- {name:'Sony FX6',w:35.6,h:20.0,baseISO:800,nd:true},{name:'Sony FX3',w:35.6,h:20.0,baseISO:800,nd:false},
- {name:'Sony FX30',w:23.5,h:13.2,baseISO:800,nd:false},{name:'ARRI ALEXA 35',w:27.99,h:19.22,baseISO:800,nd:false},
- {name:'ARRI Mini LF',w:36.7,h:25.54,baseISO:800,nd:false},{name:'Blackmagic PYXIS 6K',w:36,h:20.3,baseISO:400,nd:false},
- {name:'Blackmagic Pocket 6K',w:23.1,h:12.99,baseISO:400,nd:false},{name:'Canon C400',w:36,h:19,baseISO:800,nd:true}
-];
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cameraBtn = document.getElementById('camera-btn');
+      const videoElement = document.getElementById('webcam');
+      const errorMsg = document.getElementById('error-msg');
 
-const LIGHT_MODELS=['Aputure 600x Pro','Aputure Nova P300c','ARRI M18','Nanlux Evoke','Astera Titan Tube'];
+      if (!cameraBtn || !videoElement) {
+        console.error('אלמנטים אינם קיימים ב-DOM');
+        return;
+      }
 
-const LENS_CATALOG=[];
-function lensPrime(brand,series,focal,aperture,fmt,mounts,source,extra={}){
- const type=extra.squeeze?'Anamorphic':'Prime',id=(brand+'-'+series+'-'+focal).toLowerCase().replace(/[^a-z0-9]+/g,'-');
- LENS_CATALOG.push({id,brand,series,name:focal+'mm '+(extra.stopKind||'T')+aperture,kind:type,fMin:focal,fMax:focal,maxStop:aperture,stopKind:extra.stopKind||'T',format:fmt,mounts,source,squeeze:extra.squeeze||1,mod:extra.mod||null,circle:extra.circle||null});
-}
-function lensZoom(brand,series,min,max,aperture,fmt,mounts,source,extra={}){
- const id=(brand+'-'+series+'-'+min+'-'+max).toLowerCase().replace(/[^a-z0-9]+/g,'-');
- LENS_CATALOG.push({id,brand,series,name:min+'–'+max+'mm '+(extra.stopKind||'T')+aperture,kind:'Zoom',fMin:min,fMax:max,maxStop:aperture,stopKind:extra.stopKind||'T',format:fmt,mounts,source,squeeze:1,mod:extra.mod||null,circle:extra.circle||null});
-}
-const SOURCE={
- arri:'https://www.arri.com/en/cine-lenses/signature-lenses/signature-primes-zooms/arri-signature-lenses-technical-data',
- cooke:'https://cookeoptics.com/lens/panchro-classic-i-s35/',
- zeiss:'https://www.zeiss.com/photonics-and-optics/en/cinematography/lenses/compact-prime-cp-3-lenses.html',
- angenieux:'https://www.angenieux.com/lenses/type-ez-series/',
- sony:'https://www.sony.com/electronics/support/lenses-e-mount-lenses/sel35f14gm/specifications',
- sonyZoom:'https://www.sony.com/electronics/support/lenses-e-mount-lenses/sel2470gm2',
- sigma:'https://www.sigma-global.com/en/lenses/a024_24_70_28_ii',
- canon:'https://www.usa.canon.com/shop/p/cn-e35mm-t1-5-l-f',
- fujinon:'https://www.fujifilm.com/us/en/business/cine-and-broadcast/cine-lens/mk',
- dzo:'https://dzofilm.com/en/lens/prime/vespid-prime',
- atlas:'https://atlaslensco.com/products/orion-series-anamorphic-lenses'
-};
-for(const f of [21,25,29,35,40,47,58,75,95])lensPrime('ARRI','Signature Prime',f,1.8,'FF',['LPL'],SOURCE.arri,{circle:46.3});
-for(const [a,b] of [[16,32],[24,75],[45,135]])lensZoom('ARRI','Signature Zoom',a,b,2.8,'FF',['LPL'],SOURCE.arri,{circle:46.3});
-for(const f of [18,25,32,40,50,75])lensPrime('Cooke','Panchro/i Classic',f,2.2,'S35',['PL'],SOURCE.cooke);
-for(const f of [28,35,50,85,100])lensPrime('ZEISS','CP.3',f,2.1,'FF',['PL','EF','E'],SOURCE.zeiss);
-lensZoom('Angénieux','EZ-1 S35',30,90,2.0,'S35',['PL'],SOURCE.angenieux,{circle:30.4});
-lensZoom('Angénieux','EZ-1 FF',45,135,3.0,'FF',['PL'],SOURCE.angenieux,{circle:46.3});
-lensZoom('Angénieux','EZ-2 S35',15,40,2.0,'S35',['PL'],SOURCE.angenieux,{circle:30.4});
-lensZoom('Angénieux','EZ-2 FF',22,60,3.0,'FF',['PL'],SOURCE.angenieux,{circle:46.3});
-lensPrime('Sony','FE GM',35,1.4,'FF',['E'],SOURCE.sony,{stopKind:'F',mod:.27});
-lensZoom('Sony','FE GM II',24,70,2.8,'FF',['E'],SOURCE.sonyZoom,{stopKind:'F'});
-lensZoom('Sigma','Art DG DN II',24,70,2.8,'FF',['E','L'],SOURCE.sigma,{stopKind:'F'});
-for(const [f,t] of [[24,1.5],[35,1.5],[50,1.3],[85,1.3]])lensPrime('Canon','CN-E',f,t,'FF',['EF'],SOURCE.canon,{});
-lensZoom('Fujinon','MK',18,55,2.9,'S35',['E'],SOURCE.fujinon,{circle:28.5,mod:.85});
-lensZoom('Fujinon','MK',50,135,2.9,'S35',['E'],SOURCE.fujinon,{circle:28.5,mod:1.2});
-for(const f of [25,35,50,75,100])lensPrime('DZOFILM','Vespid',f,2.1,'FF',['PL','EF'],SOURCE.dzo,{circle:46.5});
-for(const f of [32,40,50,65])lensPrime('Atlas','Orion 2×',f,2.0,'S35',['PL'],SOURCE.atlas,{circle:31,squeeze:2});
-const CUSTOM_LENS={id:'custom-lens',brand:'Custom',series:'Manual',name:'Manual focal length',kind:'Custom',fMin:12,fMax:300,maxStop:1.4,stopKind:'T',format:'Unknown',mounts:['E','PL','LPL','EF','RF','L'],source:null,squeeze:1,circle:null};
+      cameraBtn.addEventListener('click', async () => {
+        console.log('כפתור המצלמה נלחץ');
+        errorMsg.textContent = '';
 
-// Real 3D GLB Models provided in context
-const AVATAR_SOURCES = {
- male: [
-  'daniel-man.glb'
- ],
- female: [
-  'brisk-walk-maya-3d-person-animated.glb'
- ]
-};
-const avatarCustomUrls={male:null,female:null};
-const avatarLoadStatuses=new Map(),avatarMixers=new Map();
-let avatarModelLoader=null;
-function actorRealStatus(id,code,message){avatarLoadStatuses.set(id,{code,message});const item=itemById(id);const b=$('avatarPreviewStatus');if(b){const actor=state.items.find(x=>x.type==='actor');if(actor?.id===id){b.textContent=code==='ok'?'GLB · STATIC TRUE 3D':code==='error'?'3D MODEL UNAVAILABLE':'LOADING 3D MODEL';b.dataset.status=code}}if(item&&state.selected===id){const e=$('actorLoadStatus');if(e){e.textContent=message;e.dataset.status=code}}}
-LENS_CATALOG.unshift(CUSTOM_LENS);
-const LENS_MAP=new Map(LENS_CATALOG.map(l=>[l.id,l]));
-function lensOf(it){return LENS_MAP.get(it?.lensId)||CUSTOM_LENS}
-function cameraMount(it){return ['E','E','E','LPL','LPL','L','EF','RF'][it.cam]||'E'}
-function activeSensor(it){const model=CAMERA_MODELS[it.cam]||CAMERA_MODELS[0],h=Math.min(model.h,model.w*9/16);return{w:h*16/9,h,diag:Math.hypot(h*16/9,h)}}
-function lensFit(it){const l=lensOf(it),camMount=cameraMount(it),mount=it.lensMount||l.mounts[0],adapters={E:['PL','EF','LPL'],RF:['EF','PL'],LPL:['PL'],L:['PL','EF']};
- let mountFlag='ok',mountMsg=mount===camMount?'תושבת תואמת ישירות':'התושבת שונה — אין התאמה ישירה';
- if(mount!==camMount){mountFlag=(adapters[camMount]||[]).includes(mount)?'warn':'danger';mountMsg=mountFlag==='warn'?'נדרש מתאם מתאים ואימות של היצרן':'לא קיימת תאימות ישירה ידועה — יש לבדוק'}
- let coverFlag='ok',coverMsg='כיסוי חיישן מתאים למצב 16:9 המשוער';
- if(l.circle&&activeSensor(it).diag>l.circle+.2){coverFlag='danger';coverMsg='העיגול האופטי קטן מאלכסון החיישן הפעיל — ייתכן וינייטינג';}
- else if(!l.circle&&l.format==='FF'&&activeSensor(it).diag>43.3){coverFlag='warn';coverMsg='כיסוי FF מאומת, אבל הכיסוי לחיישן גדול מ-FF לא אומת';}
- else if(!l.circle&&l.format==='S35'&&activeSensor(it).diag>31.5){coverFlag='warn';coverMsg='עדשת S35 עם חיישן גדול — יש לבדוק Crop/כיסוי';}
- else if(!l.circle&&l.format==='Unknown'){coverFlag='warn';coverMsg='אין מידע כיסוי עבור העדשה הידנית';}
- const level=mountFlag==='danger'||coverFlag==='danger'?'danger':mountFlag==='warn'||coverFlag==='warn'?'warn':'ok';
- return {level,mountMsg,coverMsg,cameraMount:camMount,mount};
-}
-function ensureLens(it){if(it.type!=='cam')return;if(!LENS_MAP.has(it.lensId))it.lensId='custom-lens';const l=lensOf(it);if(!l.mounts.includes(it.lensMount))it.lensMount=l.mounts.includes(cameraMount(it))?cameraMount(it):l.mounts[0];}
-function setLens(it,id){if(!LENS_MAP.has(id))return;const l=LENS_MAP.get(id);it.lensId=id;it.lensMount=l.mounts.includes(cameraMount(it))?cameraMount(it):l.mounts[0];it.f=l.fMin===l.fMax?l.fMin:Math.round((l.fMin+l.fMax)/2);it.t=l.maxStop;it.focus=Math.max(it.focus||2.7,l.mod||.5);onItemUpdate(it,false);renderInspector();notify(l.brand+' '+l.series+' '+l.name+' נבחרה');}
-function escHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          errorMsg.textContent = 'הדפדפן אינו תומך בגישה למצלמה (וודא שאתה עובד ב-HTTPS או localhost).';
+          return;
+        }
 
-const TYPE_NAMES={cam:'מצלמה',soft:'סופטבוקס',spot:'פנס ספוט',tube:'טובת LED',actor:'שחקן',flag:'נגטיב פיל',bounce:'רפלקטור',table:'שולחן'};
-const TYPE_COLORS={cam:'#8ab2e6',soft:'#e7c47b',spot:'#d6a954',tube:'#92c2aa',actor:'#d0a18a',flag:'#7f8992',bounce:'#b8c7a5',table:'#bba58c'};
-const state={dofEnabled:true,lockDOFPreviewExposure:true,cameraTool:'move',aimCameraId:null,room:{w:6.2,d:5,h:3.1},items:[],selected:null,nextId:1,mode:'split',zoom:1,pan:{x:0,y:0},referenceActive:false,project:'סצנת דיאלוג · מטבח',refUrls:[]};
-const round=(x,n=1)=>Number(x).toFixed(n);const rad=n=>n*Math.PI/180;const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-let toastHandle;function notify(s){$('toast').textContent=s;$('toast').classList.add('visible');clearTimeout(toastHandle);toastHandle=setTimeout(()=>$('toast').classList.remove('visible'),2700)}
-function itemById(id){return state.items.find(it=>it.id===id)}
-function activeCamera(){const selected=itemById(state.selected);return selected?.type==='cam'?selected:state.items.find(it=>it.type==='cam')}
-function addItem(type,defaults={},quiet=false){const id=state.nextId++;let item={id,type,name:TYPE_NAMES[type]+' '+String(id).padStart(2,'0'),x:0,z:0,y:1,rot:0,tilt:0,...defaults};
- if(type==='cam')Object.assign(item,{y:1.45,z:-1.7,cam:0,f:35,t:2.8,focus:2.7,iso:800,nd:0,wb:5600,lensId:'sigma-art-dg-dn-ii-24-70',lensMount:'E',...defaults});
- if(['soft','spot','tube'].includes(type))Object.assign(item,{x:-2,y:2.25,z:-.55,rot:43,tilt:25,I:78,k:4400,ang:type==='spot'?40:85,fixture:type==='tube'?4:0,...defaults});
- if(type==='actor')Object.assign(item,{x:0,z:1.12,y:0,rot:0,actorVariant:'male',...defaults});
- if(type==='flag')Object.assign(item,{x:1.8,z:-.35,y:0,rot:55,...defaults});
- if(type==='bounce')Object.assign(item,{x:-1.9,z:1.15,y:0,rot:-25,...defaults});
- if(type==='table')Object.assign(item,{x:0,z:0,y:0,rot:0,...defaults});
- if(type==='cam')ensureLens(item);state.items.push(item);if(worldReady)createWorldItem(item);if(!quiet){select(item.id);notify(TYPE_NAMES[type]+' נוסף לסצנה')}renderAll();return item}
-function initialScene(){state.items=[];state.selected=null;state.nextId=1;
- addItem('table',{name:'שולחן אוכל',x:-1.45,z:.15},true);addItem('actor',{name:'שחקנית · A',actorVariant:'female',x:.45,z:.75},true);
- addItem('cam',{name:'CAM A · Sony FX6',x:0,z:-2.0,rot:0,tilt:-1,f:35},true);
- addItem('soft',{name:'Aputure 600x · Key',x:-2,z:-.48,rot:59,tilt:25,k:4300,I:85},true);
- addItem('spot',{name:'ARRI M18 · Back',x:2.2,z:1.9,rot:-132,tilt:31,I:44,k:6200,ang:45},true);
- addItem('flag',{name:'Negative Fill 4×4',x:1.65,z:-.25,rot:70},true);
- addItem('bounce',{name:'Bounce 4×4',x:-2.1,z:1.05,rot:-25},true);
- state.selected=3;const c=state.items.find(i=>i.type==='cam'),actor=state.items.find(i=>i.type==='actor');if(c&&actor){c.rot=normalizedAngle(Math.atan2(actor.x-c.x,actor.z-c.z)*180/Math.PI);c.focus=Math.hypot(actor.x-c.x,actor.z-c.z,1.54-c.y)}renderAll()}
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'user' }, 
+            audio: false 
+          });
+          videoElement.srcObject = stream;
+          console.log('המצלמה הופעלה בהצלחה');
+        } catch (err) {
+          console.error('שגיאה בגישה למצלמה:', err);
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            errorMsg.textContent = 'הרשאת המצלמה נדחתה בדפדפן.';
+          } else {
+            errorMsg.textContent = 'לא ניתן להפעיל את המצלמה: ' + err.message;
+          }
+        }
+      });
+    });
+  </script>
 
-function cameraDirection(it){const y=rad(it.rot||0),t=rad(it.tilt||0),h=Math.cos(t);return{x:Math.sin(y)*h,y:-Math.sin(t),z:Math.cos(y)*h}}
-function horizontalCameraDirection(it){const a=rad(it.rot||0);return{x:Math.sin(a),z:Math.cos(a)}}
-function rayToRoomWall(x,z,dx,dz){const eps=1e-7,rx=state.room.w/2,rz=state.room.d/2;let closest=Infinity;
- if(dx>eps)closest=Math.min(closest,(rx-x)/dx);if(dx<-eps)closest=Math.min(closest,(-rx-x)/dx);
- if(dz>eps)closest=Math.min(closest,(rz-z)/dz);if(dz<-eps)closest=Math.min(closest,(-rz-z)/dz);
- return Math.max(.03,Number.isFinite(closest)?closest:1)}
-function cameraTargetStatus(it){if(!it)return null;const dir=horizontalCameraDirection(it),wallDist=rayToRoomWall(it.x,it.z,dir.x,dir.z),fov=cameraFOV(it).horizontal/2;
- let actorHit=null;
- for(const a of state.items.filter(x=>x.type==='actor')){const dx=a.x-it.x,dz=a.z-it.z,depth=dx*dir.x+dz*dir.z,lateral=Math.abs(dx*dir.z-dz*dir.x);
-  if(depth>.1&&depth<wallDist&&Math.atan2(lateral,depth)*180/Math.PI<fov&&(!actorHit||depth<actorHit.distance))actorHit={distance:depth,actor:a};}
- return{wallDist,actorHit,forward:dir,azimuth:normalizedAngle(it.rot)}}
-function cameraFOV(it){if(!it)return{horizontal:54.1,vertical:32.3};const model=CAMERA_MODELS[it.cam]||CAMERA_MODELS[0];const activeH=Math.min(model.h,model.w*9/16),activeW=activeH*16/9;return {horizontal:2*Math.atan(activeW*lensOf(it).squeeze/(2*it.f))*180/Math.PI,vertical:2*Math.atan(activeH/(2*it.f))*180/Math.PI}}
-function cameraDOF(it){const m=CAMERA_MODELS[it.cam]||CAMERA_MODELS[0];const coc=Math.hypot(m.w,m.h)/1500,fn=it.f,N=it.t,s=Math.max(.3,it.focus)*1000,H=fn*fn/(N*coc)+fn;const near=s*(H-fn)/(H+s-2*fn),far=s>=H?Infinity:s*(H-fn)/(H-s);return{near:near/1000,far:far/1000}}
-function openInspector(){document.body.classList.add('inspectorOpen')}
-function closeInspector(){document.body.classList.remove('inspectorOpen')}
-function isCompactLayout(){return window.matchMedia('(max-width:910px)').matches}
-function select(id){const changed=state.selected!==id;state.selected=id;if(state.aimCameraId!==id)state.aimCameraId=null;renderList();renderInspector();if(changed)$('inspector').scrollTop=0;refreshHUD();refreshPlanAimHint();drawPlan();}
-function renderList(){const root=$('sceneList');root.replaceChildren();state.items.forEach(it=>{const el=document.createElement('div');el.className='sceneEntry '+it.type+(state.selected===it.id?' selected':'');el.tabIndex=0;el.innerHTML='<span style="display:flex;align-items:center;gap:9px;min-width:0"><span class="dot"></span><strong></strong></span><span class="number">'+String(it.id).padStart(2,'0')+'</span>';el.querySelector('strong').textContent=it.name;el.onclick=()=>select(it.id);el.onkeydown=e=>{if(e.key==='Enter')select(it.id)};root.appendChild(el)});$('itemCounter').textContent=String(state.items.length).padStart(2,'0')+' ITEMS';$('statusItems').textContent=state.items.length+' OBJECTS'}
-function propRange(it,key,label,min,max,step,unit=''){const v=Number(it[key]);return `<div class="prop"><div class="propHeader"><label>${label}</label><output id="out_${key}">${round(v,step<1?1:0)}${unit}</output></div><input type="range" data-field="${key}" min="${min}" max="${max}" step="${step}" value="${v}"></div>`}
-function propSelect(it,key,label,options){const current=key==='actorVariantSel'?(it.actorVariant||'male'):it[key];return `<div class="prop"><div class="propHeader"><label>${label}</label></div><select class="controlSelect" data-field="${key}">${options.map(([v,n])=>`<option value="${v}" ${String(current)===String(v)?'selected':''}>${n}</option>`).join('')}</select></div>`}
-function renderInspector(){const p=$('inspector'),oldScroll=p.scrollTop,it=itemById(state.selected);if(!it){p.innerHTML='<div class="emptyState">בחר פריט מהסצנה או הוסף ציוד כדי לערוך אותו.</div>';return}
- let html=`<div class="insBlock"><div class="insTitle"><span>פריט נבחר</span><small>SELECTED OBJECT</small></div><input class="controlText" id="itemName" value="" placeholder="שם הפריט"><p class="selectedType">${TYPE_NAMES[it.type].toUpperCase()} / OBJECT ${String(it.id).padStart(2,'0')}</p></div>`;
- if(it.type==='cam'){
- const lens=lensOf(it),lensBrand=lens.brand,lensSeries=lens.series;
- const brands=[...new Set(LENS_CATALOG.filter(l=>l.kind===lens.kind).map(l=>l.brand))],series=[...new Set(LENS_CATALOG.filter(l=>l.brand===lensBrand).map(l=>l.series))],models=LENS_CATALOG.filter(l=>l.brand===lensBrand&&l.series===lensSeries),lensMount=it.lensMount||lens.mounts[0];
- html+=`<div class="insBlock"><div class="insTitle">גוף מצלמה <small>CAMERA BODY</small></div>${propSelect(it,'cam','מצלמה',CAMERA_MODELS.map((x,i)=>[i,x.name]))}</div>`;
- html+=`<div class="insBlock" id="lensInspectorBlock"><div class="insTitle">ספריית עדשות <small>${LENS_CATALOG.length-1} LENSES</small></div>
- <div class="lensHero"><div class="lensHeroHead"><strong>${escHtml(lens.brand+' / '+lens.series)}</strong><span>${lens.kind==='Anamorphic'?'ANAMORPHIC '+lens.squeeze+'×':lens.kind.toUpperCase()}</span></div><div class="model">${escHtml(lens.name)}</div><div class="meta">${lens.format} / ${escHtml(lensMount)} MOUNT / ${lens.stopKind}-STOP</div></div>
- <div class="lensSelectors"><div><label for="lensKind">סוג עדשה / TYPE</label><select id="lensKind">${[...new Set(LENS_CATALOG.map(l=>l.kind))].map(k=>`<option value="${k}" ${k===lens.kind?'selected':''}>${k==='Prime'?'פריים / PRIME':k==='Zoom'?'זום / ZOOM':k==='Anamorphic'?'אנמורפית / ANAMORPHIC':'ידנית / CUSTOM'}</option>`).join('')}</select></div><div><label for="lensBrand">יצרן / BRAND</label><select id="lensBrand">${brands.map(b=>`<option value="${escHtml(b)}" ${b===lensBrand?'selected':''}>${escHtml(b)}</option>`).join('')}</select></div>
- <div><label for="lensSeries">סדרת עדשות / SERIES</label><select id="lensSeries">${series.map(b=>`<option value="${escHtml(b)}" ${b===lensSeries?'selected':''}>${escHtml(b)}</option>`).join('')}</select></div>
- <div><label for="lensModel">עדשה / MODEL</label><select id="lensModel">${models.map(l=>`<option value="${l.id}" ${l.id===it.lensId?'selected':''}>${escHtml(l.name)}</option>`).join('')}</select></div>
- <div><label for="lensMount">תושבת העדשה / MOUNT</label><select id="lensMount">${lens.mounts.map(m=>`<option value="${m}" ${m===lensMount?'selected':''}>${m}</option>`).join('')}</select></div></div>
- <div class="lensSearch"><span style="color:#9bbce0">⌕</span><input type="search" id="lensSearch" autocomplete="off" placeholder="חפש מותג, סדרה או אורך מוקד / SEARCH" aria-label="חיפוש עדשות"></div><div class="lensResults" id="lensResults"></div>
- <div class="lensFoot"><span>${lens.kind.toUpperCase()} · ${lens.format} · ${lens.squeeze>1?lens.squeeze+'× SQUEEZE':'SPHERICAL'}</span>${lens.source?`<a href="${lens.source}" target="_blank" rel="noopener noreferrer">SPEC ↗</a>`:''}</div>
- <div id="lensFitInfo"></div>
- ${lens.kind==='Zoom'||lens.kind==='Custom'?propRange(it,'f',lens.kind==='Zoom'?'זום / FOCAL LENGTH':'אורך מוקד',lens.fMin,lens.fMax,1,' mm'):`<div class="lensRangeChip"><span>PRIME / FIXED FOCAL</span><span>${it.f} mm</span></div>`}
- ${propRange(it,'t','צמצם · '+lens.stopKind+'-stop',lens.maxStop,22,.1,' '+lens.stopKind)}
- ${propRange(it,'focus','מרחק פוקוס',Math.max(.3,lens.mod||.5),12,.1,' m')}
- <div class="dofControl"><div class="dofControlTitle"><span>עומק שדה · DEPTH OF FIELD</span><label class="dofSwitch"><input type="checkbox" id="dofSwitch" ${state.dofEnabled?'checked':''}> פעיל</label></div>
- <div class="focusButtons"><button type="button" id="focusActorBtn">◎ פוקוס לשחקן/ית</button><button type="button" id="focusDistanceBtn">↻ פוקוס 3 מ׳</button></div>
- <label class="dofSwitch" style="margin-top:12px;font-size:11px"><input id="dofExposureLock" type="checkbox" ${state.lockDOFPreviewExposure?'checked':''}> השוואת טשטוש בבהירות קבועה</label>
- <p id="dofFeedback" class="dofFeedback"></p><p class="dofNote">צמצם פתוח, עדשה ארוכה ופוקוס קרוב יגדילו את הטשטוש. בהירות קבועה היא פיצוי לתצוגה בלבד; כבו אותה כדי לראות גם את שינוי החשיפה. הטשטוש הוא קירוב אופטי, לא פרופיל מדוד של העדשה.</p></div>
- <div class="insGrid" id="camStats"></div>
- <p class="lensInfoNote">שדה הראייה מחושב על בסיס החיישן והמוקד. טשטוש עומק השדה בהדמיית 3D מקורב; אופי הבוקה, הווינייטינג והעיוותים אינם מכוילים לדגם העדשה.</p></div>`;
- html+=`<div class="insBlock"><div class="insTitle">חשיפה ותמונה <small>EXPOSURE</small></div>${propSelect(it,'iso','ISO',[400,800,1250,1600,2500,3200,6400].map(x=>[x,'ISO '+x]))}${propSelect(it,'nd','ND (סטופים)',[0,2,4,6].map(x=>[x,x===0?'Clear':x+' stops']))}${propRange(it,'wb','איזון לבן',2800,8500,100,' K')}<p class="hint">הדמיית החשיפה והצבע מקורבת. טשטוש עומק השדה פעיל במוניטור ה־3D כאשר WebGL זמין; אינו מדמה במדויק את מאפייני העדשה.</p></div>`;
- }else if(['soft','spot','tube'].includes(it.type)){
- html+=`<div class="insBlock"><div class="insTitle">נתוני תאורה <small>LIGHT CONTROL</small></div>${propSelect(it,'fixture','דגם פנס',LIGHT_MODELS.map((x,i)=>[i,x]))}${propRange(it,'I','עוצמה (יחסית)',0,100,1,'%')}${propRange(it,'k','טמפרטורת צבע',2700,10000,100,' K')}${propRange(it,'ang','זווית אלומה',10,120,1,'°')}<div class="notice">העוצמה יחסית בלבד. עדיין לא הוזנו נתונים פוטומטריים של יצרנים.</div></div>`;
- }else if(it.type==='actor')html+=`<div class="insBlock"><div class="insTitle">דמות תלת־ממדית <small>REAL 3D / GLTF</small></div>${propSelect(it,'actorVariantSel','סוג דמות',[['male','גבר'],['female','אישה']])}<div class="modelStatus" id="actorLoadStatus" data-status="${avatarLoadStatuses.get(it.id)?.code||'loading'}">${avatarLoadStatuses.get(it.id)?.message||'המודל התלת־ממדי נטען…'}</div><p class="hint">הדמות היא מודל GLB תלת־ממדי אמיתי וסטטי — בלי אנימציה. אפשר לסובב אותה ולצלם מכל כיוון, והתאורה תופיע על הגוף והבגדים.</p><label class="uploadAvatar"><b>החלפת מודל 3D מקצועי</b><span>בחר קובץ GLB של ${it.actorVariant==='female'?'אישה':'גבר'}</span><input id="actorGLBUpload" type="file" accept=".glb,model/gltf-binary"></label></div>`;
- html+=`<div class="insBlock"><div class="insTitle">מיקום וכיוון <small>TRANSFORM</small></div>${it.type==='cam'?`<div class="camDirectionTip">כדי לכוון מצלמה: בחר אותה, ואז גרור את ידית <b>הסיבוב הכחולה</b> — או לחץ <b>"כוון לשחקן"</b>. הקו הכחול מסתיים בדיוק בקיר שעליו היא מצביעה.</div><p class="camAimCopy">כיוון הצילום מסומן <b>בחץ כחול</b> על השרטוט. גרור את גוף המצלמה כדי להזיז אותה, או את <b>העיגול הכחול</b> כדי לסובב.</p><div class="camAimControls"><button type="button" id="turnCamLeft" title="סובב 15 מעלות שמאלה">↶ שמאלה 15°</button><button type="button" id="turnCamRight" title="סובב 15 מעלות ימינה">ימינה 15° ↷</button><button type="button" class="wide" id="aimActor">◎ כוון לשחקן/ית</button><button type="button" class="wide ${state.aimCameraId===it.id?'aimActive':''}" id="aimPoint">⌖ ${state.aimCameraId===it.id?'בחר נקודה בתוכנית…':'כוון לנקודה בתוכנית'}</button></div>`:''}${propRange(it,'x','מיקום X',-state.room.w/2,state.room.w/2,.05,' m')}${propRange(it,'z','מיקום Z',-state.room.d/2,state.room.d/2,.05,' m')}${!['table','flag','bounce','actor'].includes(it.type)?propRange(it,'y','גובה',.3,Math.max(state.room.h,4),.05,' m'):''}${propRange(it,'rot',it.type==='cam'?'כיוון אופקי · Pan':'סיבוב',-180,180,1,'°')}${!['table','flag','bounce','actor'].includes(it.type)?propRange(it,'tilt','הטיה',-60,85,1,'°'):''}<button class="smallBtn" id="deleteSelected">מחיקת הפריט</button></div>`;
- p.innerHTML=html;p.querySelector('#itemName').value=it.name;p.querySelector('#itemName').oninput=e=>{it.name=e.target.value;renderList();refreshHUD()};
- p.querySelectorAll('[data-field]').forEach(el=>{const field=el.dataset.field;el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{if(field==='actorVariantSel'){it.actorVariant=el.value;onItemUpdate(it,false);renderInspector();return}it[field]=Number(el.value);const out=$('out_'+field);if(out){const unit=field==='x'||field==='z'||field==='y'||field==='focus'?' m':field==='t'?' '+(it.type==='cam'?lensOf(it).stopKind:'T'):field==='f'?' mm':field==='wb'||field==='k'?' K':field==='ang'||field==='rot'||field==='tilt'?'°':field==='I'?'%':'';out.textContent=round(it[field],Number(el.step)<1?1:0)+unit}onItemUpdate(it,el.tagName==='SELECT'&&field==='cam');updateCameraStats(it)})});
- if(it.type==='actor'){
-  const upload=$('actorGLBUpload');if(upload)upload.onchange=e=>{const file=e.target.files?.[0];if(!file)return;if(!file.name.toLowerCase().endsWith('.glb'))return notify('בחר קובץ GLB');if(file.size>75*1024*1024)return notify('המודל גדול מדי: המגבלה 75MB');const variant=it.actorVariant||'male';if(avatarCustomUrls[variant])URL.revokeObjectURL(avatarCustomUrls[variant]);avatarCustomUrls[variant]=URL.createObjectURL(file);for(const a of state.items.filter(x=>x.type==='actor'&&(x.actorVariant||'male')===variant))reload3DAvatar(a);notify('מודל GLB חדש נטען עבור '+(variant==='female'?'אישה':'גבר'))};
- }
- if(it.type==='cam'){
-  ensureLens(it);
-  $('dofSwitch').onchange=e=>{state.dofEnabled=e.target.checked;refreshDOFStatus(it);notify(state.dofEnabled?'טשטוש עומק שדה פעיל':'טשטוש עומק שדה כבוי')};
-  $('dofExposureLock').onchange=e=>{state.lockDOFPreviewExposure=e.target.checked;refreshHUD()};
-  $('focusActorBtn').onclick=()=>{const actor=state.items.find(o=>o.type==='actor');if(!actor)return notify('הוסף שחקן כדי לקבוע פוקוס');const dx=actor.x-it.x,dy=1.54-it.y,dz=actor.z-it.z;it.focus=clamp(Math.hypot(dx,dy,dz),Math.max(.3,lensOf(it).mod||.5),12);onItemUpdate(it,false);const control=p.querySelector('[data-field="focus"]');if(control)control.value=it.focus;const out=$('out_focus');if(out)out.textContent=round(it.focus,1)+' m';updateCameraStats(it);notify('פוקוס לשחקן: '+round(it.focus,2)+' מטר')};
-  $('focusDistanceBtn').onclick=()=>{it.focus=clamp(3,Math.max(.3,lensOf(it).mod||.5),12);onItemUpdate(it,false);const control=p.querySelector('[data-field="focus"]');if(control)control.value=it.focus;const out=$('out_focus');if(out)out.textContent=round(it.focus,1)+' m';updateCameraStats(it)};
-  $('lensKind').onchange=e=>{const l=LENS_CATALOG.find(x=>x.kind===e.target.value);if(l)setLens(it,l.id)};
-  $('lensBrand').onchange=e=>{const l=LENS_CATALOG.find(x=>x.brand===e.target.value);if(l)setLens(it,l.id)};
-  $('lensSeries').onchange=e=>{const l=LENS_CATALOG.find(x=>x.brand===lensOf(it).brand&&x.series===e.target.value);if(l)setLens(it,l.id)};
-  $('lensModel').onchange=e=>setLens(it,e.target.value);
-  $('lensMount').onchange=e=>{it.lensMount=e.target.value;updateCameraStats(it);refreshHUD()};
-  const search=$('lensSearch'),results=$('lensResults');
-  search.oninput=()=>{const q=search.value.trim().toLowerCase();results.replaceChildren();results.classList.toggle('hasResults',!!q);if(!q)return;const terms=q.split(/\s+/).filter(Boolean);const matches=LENS_CATALOG.filter(l=>l.id!=='custom-lens'&&terms.every(t=>(l.brand+' '+l.series+' '+l.name+' '+l.format+' '+l.kind).toLowerCase().includes(t))).slice(0,18);
-   if(!matches.length){results.textContent='לא נמצאו עדשות';return}
-   matches.forEach(l=>{const b=document.createElement('button');b.type='button';b.textContent=l.brand+' / '+l.series+' / '+l.name;b.onclick=()=>setLens(it,l.id);results.appendChild(b)});
-  };
-  const fzoom=$('inspector').querySelector('[data-field="f"]');if(fzoom)fzoom.addEventListener('input',()=>{updateLensZoom(it)});
-  $('turnCamLeft').onclick=()=>rotateCameraBy(it,-15);
-  $('turnCamRight').onclick=()=>rotateCameraBy(it,15);
-  $('aimActor').onclick=()=>{const actor=state.items.find(a=>a.type==='actor');if(!actor){notify('אין שחקן בסצנה. הוסף שחקן תחילה.');return}pointCameraAt(it,actor.x,actor.z,1.54);notify('המצלמה מכוונת אל השחקן')};
-  $('aimPoint').onclick=()=>{state.aimCameraId=state.aimCameraId===it.id?null:it.id;refreshPlanAimHint();renderInspector();if(state.mode==='three')document.querySelector('[data-view="plan"]').click();notify(state.aimCameraId?'לחץ על נקודה כלשהי בשרטוט כדי לכוון את המצלמה':'בחירת נקודה בוטלה')};
- }
- $('deleteSelected').onclick=()=>{deleteItem(it.id)};updateCameraStats(it);p.scrollTop=oldScroll}
-function refreshDOFStatus(it){
- const badge=$('dofHUD'),info=$('dofFeedback');if(!it||it.type!=='cam')return;
- if(badge)badge.textContent=worldReady?(dofSupported?(state.dofEnabled?'DOF · ON':'DOF · OFF'):'DOF · UNAVAILABLE'):'DOF · 2D APPROX';
- if(info)info.textContent=worldReady?`${it.f}mm · ${lensOf(it).stopKind}${round(it.t,1)} · focus ${round(it.focus,2)}m · ${dofSupported?(state.dofEnabled?'LIVE':'OFF'):'NO WEBGL DEPTH'}`:'2D APPROXIMATION / WEBGL FOR DEPTH DOF';
-}
-function updateLensZoom(it){const o=$('out_f');if(o)o.textContent=Number(it.f).toFixed(0)+' mm';const bounds=$('lensZoomCurrent');if(bounds)bounds.textContent=it.f+'mm'}
-function updateCameraStats(it){const area=$('camStats');if(!area||!it||it.type!=='cam')return;const f=cameraFOV(it),d=cameraDOF(it);area.innerHTML=`<div class="dataChip"><b>${round(f.horizontal,1)}°</b><span>Horizontal FOV</span></div><div class="dataChip"><b>${round(d.near,2)}–${Number.isFinite(d.far)?round(d.far,1):'∞'}m</b><span>Depth of Field</span></div>`;const compat=$('lensFitInfo');if(compat){const v=lensFit(it);compat.innerHTML=`<div class="lensCompatibility ${v.level==='ok'?'':v.level}">${v.level==='ok'?'✓':'⚠'} <b>${v.cameraMount} ← ${v.mount}</b> · ${escHtml(v.mountMsg)}<div>${escHtml(v.coverMsg)}</div></div>`}updateLensZoom(it);refreshDOFStatus(it);const nd=p=>p;const ndSelect=$('inspector').querySelector('[data-field=nd]');if(ndSelect){ndSelect.disabled=!CAMERA_MODELS[it.cam].nd;if(!CAMERA_MODELS[it.cam].nd&&it.nd!==0){it.nd=0;ndSelect.value='0'}}}
-function refreshHUD(){const c=activeCamera();if(!c)return;const name=CAMERA_MODELS[c.cam].name;$('shotHeaderText').textContent=name.toUpperCase()+' · '+lensOf(c).brand.toUpperCase()+' '+c.f+'MM';$('cameraHudLeft').textContent=c.f+' MM · '+lensOf(c).stopKind+round(c.t,1)+' · ISO '+c.iso;$('cameraHudRight').textContent='PAN '+Math.round(c.rot)+'° · '+c.wb+'K · ND '+c.nd;refreshDOFStatus(c);
- const tgt=cameraTargetStatus(c),pill=$('cameraStatusPill');if(pill&&tgt){const subject=tgt.actorHit?'TALENT '+tgt.actorHit.distance.toFixed(1)+'m':'WALL '+tgt.wallDist.toFixed(1)+'m';pill.textContent='PAN '+Math.round(c.rot)+'°   /   '+subject;pill.style.borderColor=tgt.actorHit?'#6d9a79':'#a7806b';pill.style.color=tgt.actorHit?'#d2f0d8':'#ffe3c3';}}
-
-function renderAll(){renderList();renderInspector();refreshHUD();refreshPlanAimHint();drawPlan();if(!worldReady)drawFallback();}
-function normalizedAngle(deg){return ((deg+180)%360+360)%360-180}
-function refreshCameraTools(){const cam=itemById(state.selected)?.type==='cam';const tools=$('cameraQuickTools');if(!tools)return;tools.classList.toggle('visible',cam);for(const [id,mode] of [['camToolMove','move'],['camToolRotate','rotate']]){const b=$(id);if(!b)continue;b.classList.toggle('active',state.cameraTool===mode);b.setAttribute('aria-pressed',String(state.cameraTool===mode))}}
-function refreshPlanAimHint(){refreshCameraTools();const it=itemById(state.selected);const cam=it?.type==='cam';const hint=$('planRotationHint');if(!hint)return;hint.classList.toggle('active',!!cam);hint.classList.toggle('aim',state.aimCameraId!==null);$('planRotationText').textContent=state.aimCameraId!==null?'לחץ על נקודה כדי לכוון אליה':'הזזה: גרירת המצלמה · סיבוב: גרירת המצלמה במצב סיבוב';$('planActionHint').textContent=state.aimCameraId!==null?'CLICK A POINT TO AIM':cam?'DRAG BLUE DOT / AIM':'DRAG TO POSITION';}
-function syncCameraRotationControl(it){if(state.selected!==it.id)return;const rot=$('inspector').querySelector('[data-field="rot"]');if(rot)rot.value=it.rot;const out=$('out_rot');if(out)out.textContent=Math.round(it.rot)+'°';const tilt=$('inspector').querySelector('[data-field="tilt"]');if(tilt)tilt.value=it.tilt;const outTilt=$('out_tilt');if(outTilt)outTilt.textContent=Math.round(it.tilt)+'°';}
-function rotateCameraBy(it,amount){it.rot=normalizedAngle(it.rot+amount);onItemUpdate(it,false);syncCameraRotationControl(it)}
-function pointCameraAt(it,x,z,targetY){const dx=x-it.x,dz=z-it.z;const distance=Math.hypot(dx,dz);if(distance<.08)return;it.rot=normalizedAngle(Math.atan2(dx,dz)*180/Math.PI);if(Number.isFinite(targetY)){it.tilt=clamp(Math.atan2(it.y-targetY,distance)*180/Math.PI,-60,85)}onItemUpdate(it,false);syncCameraRotationControl(it)}
-
-const planCanvas=$('plan'),planCtx=planCanvas.getContext('2d');let planMetrics=null;let planDrag=null;
-function safeDpr(){return Math.min(window.devicePixelRatio||1,2)}
-function fitCanvas(canvas){const b=canvas.getBoundingClientRect(),dpr=safeDpr(),w=Math.max(1,Math.floor(b.width*dpr)),h=Math.max(1,Math.floor(b.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}return{w:b.width,h:b.height,dpr}}
-function planCoordinates(W,H,exportMode=false){const pad=exportMode?110:Math.min(96,Math.max(55,W*.08));const scale=Math.min((W-pad*2)/state.room.w,(H-pad*1.75)/state.room.d)*state.zoom;return{W,H,S:scale,ox:W*.5+state.pan.x*(exportMode?1.3:1),oy:H*.51+state.pan.y*(exportMode?1.3:1)}}
-function drawPlan(){if(!$('planPanel').getBoundingClientRect().width)return;const {w,h,dpr}=fitCanvas(planCanvas);planCtx.setTransform(dpr,0,0,dpr,0,0);planMetrics=drawFloor(planCtx,w,h)}
-function roundedRect(ctx,x,y,w,h,r=7){ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h)}
-function drawFloor(ctx,W,H,options={}){
- const m=planCoordinates(W,H,options.exportMode);const {S,ox,oy}=m;
- const P=(x,z)=>({x:ox+x*S,y:oy+z*S});ctx.save();ctx.clearRect(0,0,W,H);ctx.fillStyle='#fbfaf7';ctx.fillRect(0,0,W,H);
-
- ctx.strokeStyle='#edece8';ctx.lineWidth=.65;const grid=clamp(S/2,20,68);for(let x=(ox%grid+grid)%grid;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=(oy%grid+grid)%grid;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
- const a=P(-state.room.w/2,-state.room.d/2),b=P(state.room.w/2,state.room.d/2),rw=b.x-a.x,rh=b.y-a.y;
-
- const tables=state.items.filter(it=>it.type==='table');tables.forEach(it=>drawPlanTable(ctx,P(it.x,it.z),it,S));
-
- ctx.lineWidth=clamp(S*.085,5,10);ctx.strokeStyle='#3b3b3a';ctx.strokeRect(a.x,a.y,rw,rh);
-
- [-.95,.75].forEach(v=>{const q=P(-state.room.w/2,v);const winH=S*.72;ctx.fillStyle='#fbfaf7';ctx.fillRect(q.x-7,q.y-winH/2,14,winH);ctx.fillStyle='#d2eaf2';ctx.fillRect(q.x-3,q.y-winH/2,6,winH);ctx.strokeStyle='#718a92';ctx.lineWidth=1.2;ctx.strokeRect(q.x-5,q.y-winH/2,10,winH);ctx.beginPath();ctx.moveTo(q.x-5,q.y);ctx.lineTo(q.x+5,q.y);ctx.stroke()});
-
- const doorX= a.x+rw*.74,doorY=b.y,doorW=clamp(S*.82,35,95);ctx.fillStyle='#fbfaf7';ctx.fillRect(doorX-2,doorY-8,doorW+5,16);ctx.strokeStyle='#8b8b85';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(doorX,doorY);ctx.lineTo(doorX,doorY-doorW);ctx.stroke();ctx.beginPath();ctx.arc(doorX,doorY,doorW,-Math.PI/2,0);ctx.stroke();
-
- state.items.filter(it=>['soft','spot','tube'].includes(it.type)).forEach(it=>drawBeam(ctx,P(it.x,it.z),it,S));
-
- state.items.filter(it=>it.type==='cam').forEach(it=>drawCameraCone(ctx,P(it.x,it.z),it,S));
-
- state.items.filter(it=>it.type==='actor').forEach(it=>drawActorGlyph(ctx,P(it.x,it.z),it,S));
- state.items.filter(it=>!['actor','table'].includes(it.type)).forEach(it=>drawGearGlyph(ctx,P(it.x,it.z),it,S));
- if(!options.exportMode){const selected=itemById(state.selected);if(selected?.type==='cam')drawCameraHandle(ctx,P(selected.x,selected.z),selected)}
-
- state.items.forEach(it=>{const q=P(it.x,it.z);let label=it.name;
-  if(it.type==='cam')label='CAM A · '+lensOf(it).brand+' · '+it.f+'mm';
-  if(it.type==='soft')label=it.name;
-  if(it.type==='spot')label=it.name;
-  if(it.type==='actor')label='TALENT';
-  if(it.type==='table')return;
-  const shifts={cam:[0,-38],soft:[-25,-39],spot:[26,35],tube:[-20,-37],actor:[5,34],flag:[25,-27],bounce:[-12,26]};const [dx,dy]=shifts[it.type]||[0,32];drawLabel(ctx,label,q.x+dx,q.y+dy,it.type,options.exportMode);
- });
-
- ctx.fillStyle='#878b86';ctx.font='11px '+"'DM Mono',monospace";ctx.textAlign='center';ctx.fillText(round(state.room.w,1)+' m',ox,a.y-21);ctx.save();ctx.translate(a.x-22,oy);ctx.rotate(-Math.PI/2);ctx.fillText(round(state.room.d,1)+' m',0,0);ctx.restore();
- ctx.strokeStyle='#9a9e99';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y-13);ctx.lineTo(b.x,a.y-13);ctx.moveTo(a.x,a.y-18);ctx.lineTo(a.x,a.y-8);ctx.moveTo(b.x,a.y-18);ctx.lineTo(b.x,a.y-8);ctx.stroke();
- const lx=options.exportMode?52:27,ly=H-(options.exportMode?62:36);ctx.fillStyle='#505955';ctx.font="10px 'DM Mono',monospace";ctx.textAlign='left';ctx.fillText('1 m',lx+Math.min(S,90)+9,ly+3);ctx.fillRect(lx,ly-3,Math.min(S,90),3);
- ctx.fillStyle='#a0a39d';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';ctx.fillText('FRAME/LAB  /  LIGHTING PLAN',W-23,H-20);
- ctx.restore();return m;
-}
-function drawLabel(ctx,str,x,y,type,big){ctx.save();ctx.font=`${big?'11':'10'}px 'DM Mono',sans-serif`;const width=ctx.measureText(str).width+14;const colors={cam:'#dceafa',soft:'#fff0b8',spot:'#fff2c7',tube:'#e8f2e9',actor:'#f3e6dd',flag:'#e5e7e8',bounce:'#e8f1de'};ctx.fillStyle=colors[type]||'#f1e8d6';roundedRect(ctx,x-width/2,y-11,width,20,3);ctx.fill();ctx.fillStyle='#313734';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(str,x,y-1);ctx.restore()}
-function drawBeam(ctx,p,it,S){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(-rad(it.rot));const R=rad(Math.min(55,it.ang/2)),L=S*clamp(it.type==='soft'?2.6:3.2,2.5,3.5);const grad=ctx.createLinearGradient(0,0,0,L);const warm=it.k<5000;grad.addColorStop(0,warm?'rgba(243,196,99,.43)':'rgba(174,206,239,.36)');grad.addColorStop(.55,warm?'rgba(241,199,116,.18)':'rgba(172,207,233,.14)');grad.addColorStop(1,'rgba(255,224,166,0)');ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-Math.sin(R)*L,Math.cos(R)*L);ctx.lineTo(Math.sin(R)*L,Math.cos(R)*L);ctx.closePath();ctx.fill();ctx.restore()}
-function drawCameraCone(ctx,p,it,S){
- const fov=rad(cameraFOV(it).horizontal/2),yaw=rad(it.rot||0),halfDirections=[yaw-fov,yaw+fov];
- const corners=halfDirections.map(a=>{const dx=Math.sin(a),dz=Math.cos(a),dist=rayToRoomWall(it.x,it.z,dx,dz);return{x:p.x+dx*dist*S,y:p.y+dz*dist*S}});
- const center=horizontalCameraDirection(it),dist=rayToRoomWall(it.x,it.z,center.x,center.z),end={x:p.x+center.x*dist*S,y:p.y+center.z*dist*S};
- ctx.save();ctx.fillStyle='rgba(65,155,255,.11)';ctx.strokeStyle='#5e9ddeaa';ctx.lineWidth=1.4;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(corners[0].x,corners[0].y);ctx.lineTo(corners[1].x,corners[1].y);ctx.closePath();ctx.fill();ctx.stroke();ctx.setLineDash([]);
- ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(end.x,end.y);ctx.lineWidth=2.5;ctx.strokeStyle='#2386d1';ctx.stroke();
-
- const a=.63;const ax=p.x+(end.x-p.x)*a,ay=p.y+(end.y-p.y)*a,ang=Math.atan2(center.z,center.x);
- ctx.save();ctx.translate(ax,ay);ctx.rotate(ang);ctx.fillStyle='#1470b7';ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-4,-4);ctx.lineTo(-4,4);ctx.closePath();ctx.fill();ctx.restore();
- ctx.fillStyle='#fff';ctx.strokeStyle='#2185cb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(end.x,end.y,4.2,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();}
-const CAMERA_HANDLE_RADIUS=72;
-function cameraHandleAt(it,metrics=planMetrics){if(!metrics)return null;const d=horizontalCameraDirection(it);return{x:metrics.ox+it.x*metrics.S+d.x*CAMERA_HANDLE_RADIUS,y:metrics.oy+it.z*metrics.S+d.z*CAMERA_HANDLE_RADIUS}}
-function drawCameraHandle(ctx,p,it){const a=rad(it.rot),ux=Math.sin(a),uy=Math.cos(a),R=CAMERA_HANDLE_RADIUS;ctx.save();
-
- ctx.beginPath();ctx.strokeStyle='#5794c755';ctx.lineWidth=1.2;ctx.setLineDash([3,5]);ctx.arc(p.x,p.y,R,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
- ctx.beginPath();ctx.moveTo(p.x+ux*30,p.y+uy*30);ctx.lineTo(p.x+ux*(R-12),p.y+uy*(R-12));ctx.strokeStyle='#2878c9';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
- const x=p.x+ux*R,y=p.y+uy*R;
- ctx.shadowColor='#17487977';ctx.shadowBlur=10;ctx.fillStyle='#2c83cf';ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
-
- ctx.translate(x,y);ctx.rotate(-a);ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(0,5.5);ctx.lineTo(-5.5,-3.5);ctx.lineTo(-1.4,-2);ctx.lineTo(0,-6.5);ctx.lineTo(1.4,-2);ctx.lineTo(5.5,-3.5);ctx.closePath();ctx.fill();
- ctx.restore();}
-function drawTripod(ctx,S){const r=clamp(S*.19,9,17);ctx.strokeStyle='#4b5559';ctx.lineWidth=1.8;[90,210,330].forEach(deg=>{const t=rad(deg);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(t)*r,Math.sin(t)*r);ctx.stroke()});ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fillStyle='#f7f6ee';ctx.fill();ctx.stroke()}
-function drawGearGlyph(ctx,p,it,S){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(-rad(it.rot));const selected=state.selected===it.id;
- if(['cam','soft','spot','tube'].includes(it.type))drawTripod(ctx,S);
- if(it.type==='cam'){
-
- ctx.shadowColor='rgba(12,58,98,.18)';ctx.shadowBlur=5;ctx.fillStyle='#26384a';ctx.strokeStyle='#1c3c58';ctx.lineWidth=1.5;
- roundedRect(ctx,-16,-15,32,32,4);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
- ctx.fillStyle='#90a9bc';roundedRect(ctx,-9,-19,19,5,1);ctx.fill();
- ctx.fillStyle='#142536';roundedRect(ctx,-22,-10,6,17,2);ctx.fill();ctx.strokeRect(-22,-10,6,17);
- ctx.fillStyle='#79bbf3';roundedRect(ctx,-10,13,20,11,2);ctx.fill();ctx.strokeRect(-10,13,20,11);
- ctx.fillStyle='#b5e3ff';roundedRect(ctx,-12,23,24,6,2);ctx.fill();ctx.strokeRect(-12,23,24,6);
- ctx.fillStyle='#ffffff';ctx.beginPath();ctx.moveTo(0,39);ctx.lineTo(-7,30);ctx.lineTo(7,30);ctx.closePath();ctx.fill();
- ctx.fillStyle='#cae9fc';ctx.fillRect(-11,-7,10,5);
- }else if(it.type==='soft'){
- ctx.fillStyle='#3d4a44';ctx.strokeStyle='#1d2925';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-9,-9);ctx.lineTo(9,-9);ctx.lineTo(22,16);ctx.lineTo(-22,16);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#d1dfbd';ctx.fillRect(-20,13,40,4);ctx.strokeRect(-20,13,40,4);ctx.strokeStyle='#a6b3a3';ctx.lineWidth=.8;for(let i=-15;i<=15;i+=6){ctx.beginPath();ctx.moveTo(i/2,-2);ctx.lineTo(i,16);ctx.stroke()}
- }else if(it.type==='spot'){
- ctx.fillStyle='#7da58a';ctx.strokeStyle='#3b6048';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-8,-11);ctx.lineTo(8,-11);ctx.lineTo(13,11);ctx.lineTo(-13,11);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#f7f0b1';ctx.fillRect(-11,9,22,4);ctx.strokeRect(-11,9,22,4);
- }else if(it.type==='tube'){
- ctx.fillStyle='#e7f6ee';ctx.strokeStyle='#638a7a';ctx.lineWidth=1.3;roundedRect(ctx,-4,-26,8,52,4);ctx.fill();ctx.stroke();
- }else if(it.type==='flag'||it.type==='bounce'){
- ctx.strokeStyle=it.type==='flag'?'#171c1b':'#697977';ctx.lineWidth=1.5;ctx.fillStyle=it.type==='flag'?'#262c2b':'#fdfdfa';ctx.fillRect(-S*.51,-4,S*1.02,8);ctx.strokeRect(-S*.51,-4,S*1.02,8);for(const dx of [-S*.36,S*.36]){ctx.save();ctx.translate(dx,7);drawTripod(ctx,S*.5);ctx.restore()}
- }
- if(selected){ctx.strokeStyle='#cf9871';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.strokeRect(-26,-30,52,63);ctx.setLineDash([])}ctx.restore()}
-function drawActorGlyph(ctx,p,it,S){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(-rad(it.rot));ctx.fillStyle='#8a9eb1';ctx.strokeStyle='#617589';ctx.lineWidth=1.1;ctx.beginPath();ctx.ellipse(0,0,clamp(S*.23,10,18),clamp(S*.12,6,10),0,0,7);ctx.fill();ctx.stroke();ctx.fillStyle='#d2a98d';ctx.beginPath();ctx.arc(0,5,clamp(S*.085,5,8),0,7);ctx.fill();ctx.strokeStyle='#6a574d';ctx.stroke();ctx.strokeStyle='#8a9eb1';ctx.beginPath();ctx.moveTo(-13,3);ctx.lineTo(-16,17);ctx.moveTo(13,3);ctx.lineTo(16,17);ctx.stroke();if(state.selected===it.id){ctx.setLineDash([4,4]);ctx.strokeStyle='#cf9871';ctx.strokeRect(-24,-23,48,49);ctx.setLineDash([])}ctx.restore()}
-function drawPlanTable(ctx,p,it,S){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(-rad(it.rot));const w=S*1.65,h=S*.80;ctx.fillStyle='#e2d7c8';ctx.strokeStyle='#9b9186';ctx.lineWidth=1.5;roundedRect(ctx,-w/2,-h/2,w,h,4);ctx.fill();ctx.stroke();ctx.fillStyle='#f1ebe3';ctx.beginPath();ctx.arc(-w*.22,0,Math.max(S*.10,6),0,7);ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(w*.22,0,Math.max(S*.10,6),0,7);ctx.fill();ctx.stroke();for(const x of [-w*.31,w*.31]){ctx.fillStyle='#f5efe7';roundedRect(ctx,x-12,h/2+5,24,10,3);ctx.fill();ctx.stroke()}ctx.restore()}
-function pointFromEvent(e){const r=planCanvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
-function sceneFromPixel(p){if(!planMetrics)return{x:0,z:0};return{x:(p.x-planMetrics.ox)/planMetrics.S,z:(p.y-planMetrics.oy)/planMetrics.S}}
-function cameraHandleHit(p){const it=itemById(state.selected);if(it?.type!=='cam'||!planMetrics)return null;const h=cameraHandleAt(it);return Math.hypot(p.x-h.x,p.y-h.y)<=30?it:null}
-planCanvas.addEventListener('pointerdown',e=>{
- const p=pointFromEvent(e),m=planMetrics;if(!m)return;
-
- if(state.aimCameraId!==null){const cam=itemById(state.aimCameraId);if(cam){const pt=sceneFromPixel(p);pointCameraAt(cam,pt.x,pt.z);state.aimCameraId=null;refreshPlanAimHint();renderInspector();notify('כיוון המצלמה עודכן');}return}
- const handle=cameraHandleHit(p);
- if(handle){planDrag={kind:'rotate',id:handle.id};planCanvas.style.cursor='grabbing';}
- else {
-
-  const near=state.items.map(it=>({it,d:Math.hypot(p.x-(m.ox+it.x*m.S),p.y-(m.oy+it.z*m.S))})).filter(v=>v.d<Math.max(v.it.type==='cam'?29:19,m.S*(v.it.type==='cam'?.3:.20)));
-  near.sort((a,b)=>a.d-b.d);
-  const picked=near.find(v=>v.it.id===state.selected&&v.d<27)||near[0];
-  if(picked){
-   const hit=picked.it;
-   select(hit.id);
-   if(hit.type==='cam'&&e.detail>=2){state.aimCameraId=hit.id;refreshPlanAimHint();renderInspector();notify('לחץ על נקודה בשרטוט כדי לכוון מצלמה');return}
-
-   const hitWorld=sceneFromPixel(p);
-   planDrag={kind:hit.type==='cam'&&state.cameraTool==='rotate'?'rotate':'object',id:hit.id,p,offsetX:hit.x-hitWorld.x,offsetZ:hit.z-hitWorld.z};
-  } else planDrag={kind:'pan',p,from:{...state.pan}};
- }
- planCanvas.setPointerCapture(e.pointerId);
-});
-planCanvas.addEventListener('pointermove',e=>{
- const p=pointFromEvent(e);
- if(!planDrag){const selected=itemById(state.selected),camPoint=selected?.type==='cam'?{x:planMetrics.ox+selected.x*planMetrics.S,y:planMetrics.oy+selected.z*planMetrics.S}:null;const overCam=camPoint&&Math.hypot(p.x-camPoint.x,p.y-camPoint.y)<29;planCanvas.style.cursor=state.aimCameraId!==null?'crosshair':cameraHandleHit(p)?'grab':overCam?(state.cameraTool==='move'?'move':'alias'):'grab';return}
- if(planDrag.kind==='pan'){state.pan.x=planDrag.from.x+p.x-planDrag.p.x;state.pan.y=planDrag.from.y+p.y-planDrag.p.y;drawPlan();}
- else{const it=itemById(planDrag.id);if(!it)return;
-  if(planDrag.kind==='rotate'){const cx=planMetrics.ox+it.x*planMetrics.S,cy=planMetrics.oy+it.z*planMetrics.S;const dx=p.x-cx,dy=p.y-cy;
-   if(Math.hypot(dx,dy)>9){const raw=Math.atan2(dx,dy)*180/Math.PI;it.rot=normalizedAngle(e.shiftKey?Math.round(raw/15)*15:Math.round(raw));onItemUpdate(it,false);syncCameraRotationControl(it);}
-  }else{const pos=sceneFromPixel(p);it.x=clamp(pos.x+(planDrag.offsetX||0),-state.room.w/2+.12,state.room.w/2-.12);it.z=clamp(pos.z+(planDrag.offsetZ||0),-state.room.d/2+.12,state.room.d/2-.12);onItemUpdate(it,false);syncCameraRotationControl(it)}
- }
-});
-function endPlanDrag(){if(planDrag&&planDrag.kind!=='pan')renderInspector();planDrag=null;planCanvas.style.cursor='default'}
-planCanvas.addEventListener('pointerup',endPlanDrag);planCanvas.addEventListener('pointercancel',endPlanDrag);
-
-$('camToolMove').onclick=()=>{state.cameraTool='move';refreshCameraTools()};
-$('camToolRotate').onclick=()=>{state.cameraTool='rotate';refreshCameraTools()};
-planCanvas.addEventListener('wheel',e=>{e.preventDefault();const old=state.zoom;state.zoom=clamp(state.zoom*(e.deltaY>0?.90:1.1),.55,3);if(Math.abs(old-state.zoom)>.001)drawPlan();refreshZoom()},{passive:false});
-function refreshZoom(){$('zoomLabel').textContent=Math.round(state.zoom*100)+'%'}
-$('zoomIn').onclick=()=>{state.zoom=clamp(state.zoom*1
+</body>
+</html>
