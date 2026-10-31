@@ -1,98 +1,182 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>תצוגת מצלמה</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      background-color: #f4f4f9;
-    }
-    .camera-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-    video {
-      width: 100%;
-      max-width: 500px;
-      border-radius: 8px;
-      background-color: #000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background-color: #007bff;
-      color: white;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #error-msg {
-      color: red;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
+<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Previz Studio – MVP</title><style>
+:root{--bg:#111214;--pn:#1a1c20;--tx:#e8e8ea;--mu:#8b8f98;--ac:#e0a030;--bd:#2b2e35;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:13px system-ui,Arial,sans-serif}
+#app{display:grid;grid-template-columns:190px 1fr 290px;height:100%}
+aside{background:var(--pn);padding:10px;overflow:auto;border-inline:1px solid var(--bd)}
+h4{margin:12px 0 6px;color:var(--ac);font-size:12px;letter-spacing:.05em}
+button,select,input{font:inherit;color:var(--tx);background:#25282e;border:1px solid var(--bd);border-radius:6px;padding:6px 8px}
+button{cursor:pointer;width:100%;margin-bottom:6px;text-align:start;background:#202328;border-radius:8px;padding:8px 10px}button:hover,button.on{border-color:var(--ac)}
+#mid{position:relative;display:flex;flex-direction:column;min-width:0}#tabs{display:flex;gap:6px;padding:8px}#tabs button{width:auto;margin:0}
+#stage{flex:1;position:relative;min-height:0}#c3,#plan{position:absolute;inset:0;width:100%;height:100%}#plan{display:none;background:#f4f1ea;touch-action:none}
+.row{display:flex;align-items:center;gap:6px;margin:5px 0}.row label{width:84px;color:var(--mu);font-size:12px}.row input[type=range]{flex:1;padding:0}.row span{width:42px;text-align:end;font-variant-numeric:tabular-nums}
+#pv{width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--bd);border-radius:6px;display:block}
+small{color:var(--mu);display:block;line-height:1.5;margin-top:6px}.num{width:60px}.tag{color:#e07050}
+@media(max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:auto 55vh auto}}
+</style></head><body><div id="app">
+<aside id="lib"><h4>ספריית ציוד</h4><button id="addCam">+ מצלמה</button><button id="addSpot">+ פנס (Spot)</button><button id="addSoft">+ פנס רך (Area)</button><button id="addAct">+ שחקן (175 ס״מ)</button><button id="addFlag">+ דגל שחור (Negative Fill)</button><button id="addBnc">+ Bounce לבן</button><button id="addTbl">+ שולחן</button>
+<h4>חדר (מטרים)</h4><div class="row"><input class="num" id="rw" value="5"><input class="num" id="rd" value="4"><input class="num" id="rh" value="2.7"></div><button id="mkRoom">עדכן חדר</button>
+<h4>ייבוא מודל</h4><input type="file" id="glb" accept=".glb,.gltf" style="width:100%"><small>GLB/glTF, יחידות במטרים.</small>
+<h4>פרויקט</h4><button id="save">שמור</button><button id="load">טען</button><button id="png">ייצוא Floor Plan PNG</button><h4>סצנה</h4><div id="list"></div></aside>
+<div id="mid"><div id="tabs"><button id="t3" class="on">3D</button><button id="tp">Floor Plan</button></div><div id="stage"><canvas id="c3"></canvas><canvas id="plan"></canvas></div></div>
+<aside id="set"><h4>Camera Preview</h4><canvas id="pv" width="480" height="270"></canvas><div id="panel"><small>בחר פריט בסצנה כדי לערוך אותו.</small></div></aside></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+// נתוני חיישן מדגמי דמו: יש לאמת מול מפרט היצרן לפני שימוש (שטח פעיל תלוי במצב צילום)
+const CAMS=[{n:"Sony FX6 (FF)",w:35.6,h:23.8},{n:"Sony FX3 (FF)",w:35.6,h:23.8},{n:"ARRI ALEXA Mini LF (Open Gate)",w:36.7,h:25.54},{n:"ARRI ALEXA 35 (4:3 Open Gate)",w:27.99,h:19.22},{n:"Blackmagic Pocket 6K",w:23.1,h:12.99}];
+const FL=[16,24,35,50,85,135],TS=[1.4,2,2.8,4,5.6,8,11],FLAT=["act","flag","bounce","table"];
+let room={w:5,d:4,h:2.7},items=[],sel=null,uid=1,view3=true;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x1b1d22);
+scene.add(new THREE.AmbientLight(0xffffff,.22));
+const r3=new THREE.WebGLRenderer({canvas:$("c3"),antialias:true});r3.shadowMap.enabled=true;
+const rp=new THREE.WebGLRenderer({canvas:$("pv"),antialias:true});rp.shadowMap.enabled=true;
+const cam3=new THREE.PerspectiveCamera(50,1,.05,100);cam3.position.set(5,4,6);
+const oc=new THREE.OrbitControls(cam3,$("c3"));oc.target.set(0,1,0);
+let roomG=new THREE.Group();scene.add(roomG);let imported=[];
+function mkRoom(){scene.remove(roomG);roomG=new THREE.Group();const m=new THREE.MeshStandardMaterial({color:0xe6e0d4,side:THREE.BackSide,roughness:.95});
+ const b=new THREE.Mesh(new THREE.BoxGeometry(room.w,room.h,room.d),m);b.position.y=room.h/2;b.receiveShadow=true;roomG.add(b);const fl=new THREE.Mesh(new THREE.PlaneGeometry(room.w,room.d),new THREE.MeshStandardMaterial({color:0x8a6f50,roughness:.8}));fl.rotation.x=-Math.PI/2;fl.position.y=.005;fl.receiveShadow=true;roomG.add(fl);
+ const g=new THREE.GridHelper(Math.max(room.w,room.d),Math.max(room.w,room.d),0x666666,0x444444);g.position.y=.01;roomG.add(g);scene.add(roomG);draw()}
+function fov(it){const c=CAMS[it.cam],hs=Math.min(c.h,c.w*9/16),ws=hs*16/9;return{v:2*Math.atan(hs/(2*it.f))*180/Math.PI,hh:2*Math.atan(ws/(2*it.f))*180/Math.PI,hs}}
+function dof(it){const c=CAMS[it.cam],coc=Math.hypot(c.w,c.h)/1500,f=it.f,N=it.t,s=it.focus*1000,H=f*f/(N*coc)+f;
+ const n=s*(H-f)/(H+s-2*f),fr=s<H?s*(H-f)/(H-s):Infinity;return{n:n/1000,f:fr/1000}}
+function build(it){const g=new THREE.Group();it.g=g;
+ if(it.type=="cam"){g.add(new THREE.Mesh(new THREE.BoxGeometry(.2,.18,.35),new THREE.MeshStandardMaterial({color:0x3a7bd5})));it.pc=new THREE.PerspectiveCamera(40,16/9,.05,100)}
+ else if(it.type=="flag"||it.type=="bounce"||it.type=="table"){const D={flag:[1.2,1.8,.04,0x0a0a0a],bounce:[1.2,1.8,.04,0xf2f2f2],table:[1.1,.75,.8,0x9a7a55]}[it.type];const m=new THREE.Mesh(new THREE.BoxGeometry(D[0],D[1],D[2]),new THREE.MeshStandardMaterial({color:D[3]}));m.position.y=D[1]/2;m.castShadow=m.receiveShadow=true;g.add(m)}
+ else if(it.type=="act"){
+  // בניית דמות תלת-ממדית מפורטת (גובה כולל ~1.75 מטר)
+  const matSkin = new THREE.MeshStandardMaterial({color:0xd0a080, roughness:0.7});
+  const matShirt = new THREE.MeshStandardMaterial({color:0x3b6ea5, roughness:0.8});
+  const matPants = new THREE.MeshStandardMaterial({color:0x2c2c35, roughness:0.8});
+  const matShoes = new THREE.MeshStandardMaterial({color:0x1a1a1a, roughness:0.9});
 
-  <div class="camera-container">
-    <video id="webcam" autoplay playsinline muted></video>
-    <button id="camera-btn">הפעל מצלמה</button>
-    <p id="error-msg"></p>
-  </div>
+  // נעליים
+  const shoeGeo = new THREE.BoxGeometry(0.12, 0.08, 0.22);
+  const leftShoe = new THREE.Mesh(shoeGeo, matShoes); leftShoe.position.set(-0.1, 0.04, 0.02); leftShoe.castShadow = true; g.add(leftShoe);
+  const rightShoe = new THREE.Mesh(shoeGeo, matShoes); rightShoe.position.set(0.1, 0.04, 0.02); rightShoe.castShadow = true; g.add(rightShoe);
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const cameraBtn = document.getElementById('camera-btn');
-      const videoElement = document.getElementById('webcam');
-      const errorMsg = document.getElementById('error-msg');
+  // רגליים (מכנסיים)
+  const legGeo = new THREE.BoxGeometry(0.14, 0.75, 0.14);
+  const leftLeg = new THREE.Mesh(legGeo, matPants); leftLeg.position.set(-0.1, 0.45, 0); leftLeg.castShadow = true; g.add(leftLeg);
+  const rightLeg = new THREE.Mesh(legGeo, matPants); rightLeg.position.set(0.1, 0.45, 0); rightLeg.castShadow = true; g.add(rightLeg);
 
-      if (!cameraBtn || !videoElement) {
-        console.error('אלמנטים אינם קיימים ב-DOM');
-        return;
-      }
+  // פלג גוף עליון (חולצה)
+  const torsoGeo = new THREE.BoxGeometry(0.38, 0.65, 0.22);
+  const torso = new THREE.Mesh(torsoGeo, matShirt); torso.position.set(0, 1.15, 0); torso.castShadow = true; g.add(torso);
 
-      cameraBtn.addEventListener('click', async () => {
-        console.log('כפתור המצלמה נלחץ');
-        errorMsg.textContent = '';
+  // זרועות
+  const armGeo = new THREE.BoxGeometry(0.1, 0.55, 0.1);
+  const leftArm = new THREE.Mesh(armGeo, matShirt); leftArm.position.set(-0.25, 1.12, 0); leftArm.castShadow = true; g.add(leftArm);
+  const rightArm = new THREE.Mesh(armGeo, matShirt); rightArm.position.set(0.25, 1.12, 0); rightArm.castShadow = true; g.add(rightArm);
 
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          errorMsg.textContent = 'הדפדפן אינו תומך בגישה למצלמה (וודא שאתה עובד ב-HTTPS או localhost).';
-          return;
-        }
+  // צוואר
+  const neckGeo = new THREE.CylinderGeometry(0.05, 0.06, 0.1, 12);
+  const neck = new THREE.Mesh(neckGeo, matSkin); neck.position.set(0, 1.52, 0); neck.castShadow = true; g.add(neck);
 
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'user' }, 
-            audio: false 
-          });
-          videoElement.srcObject = stream;
-          console.log('המצלמה הופעלה בהצלחה');
-        } catch (err) {
-          console.error('שגיאה בגישה למצלמה:', err);
-          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            errorMsg.textContent = 'הרשאת המצלמה נדחתה בדפדפן.';
-          } else {
-            errorMsg.textContent = 'לא ניתן להפעיל את המצלמה: ' + err.message;
-          }
-        }
-      });
-    });
-  </script>
-
-</body>
-</html>
+  // ראש
+  const headGeo = new THREE.BoxGeometry(0.2, 0.24, 0.22);
+  const head = new THREE.Mesh(headGeo, matSkin); head.position.set(0, 1.68, 0); head.castShadow = true; g.add(head);
+ }
+ else{g.add(new THREE.Mesh(new THREE.BoxGeometry(it.type=="soft"?.5:.25,it.type=="soft"?.5:.25,.2),new THREE.MeshBasicMaterial({color:0xffd070})));
+  const l=new THREE.SpotLight(0xffffff,1,0,1,it.type=="soft"?.9:.5,1);l.castShadow=true;l.shadow.mapSize.set(1024,1024);l.shadow.radius=it.type=="soft"?8:1;g.add(l);g.add(l.target);l.target.position.set(0,0,2);it.l=l}
+ scene.add(g);apply(it)}
+function kelvin(k){k/=100;let r=k<=66?255:329.7*Math.pow(k-60,-.1332),gg=k<=66?99.47*Math.log(k)-161.1:288.1*Math.pow(k-60,-.0755),b=k>=66?255:k<=19?0:138.5*Math.log(k-10)-305;
+ const c=x=>Math.max(0,Math.min(255,x))/255;return new THREE.Color(c(r),c(gg),c(b))}
+function apply(it){const g=it.g;g.position.set(it.x,it.y,it.z);const r=it.rot*Math.PI/180,t=(it.tilt||0)*Math.PI/180;
+ if(FLAT.includes(it.type)){g.rotation.y=r;g.position.y=0}
+ else{g.lookAt(it.x+Math.sin(r)*Math.cos(t),it.y-Math.sin(t),it.z+Math.cos(r)*Math.cos(t))}
+ if(it.l){it.l.intensity=it.I/40;it.l.color=kelvin(it.k);it.l.angle=it.ang*Math.PI/360}
+ if(it.pc){const e=fov(it);it.pc.fov=e.v;it.pc.position.copy(g.position);it.pc.quaternion.copy(g.quaternion);it.pc.updateProjectionMatrix()}
+ draw()}
+function add(type){const it={id:uid++,type,x:0,z:-room.d/4,y:type=="cam"?1.5:FLAT.includes(type)?0:2,rot:0,tilt:0,name:{cam:"CAM",spot:"Spot",soft:"Nova + Grid",act:"Actor",flag:"Negative Flag",bounce:"Bounce",table:"Table"}[type]+" "+uid};
+ if(type=="cam")Object.assign(it,{cam:0,f:35,t:2.8,focus:3,iso:800});
+ if(type=="spot"||type=="soft")Object.assign(it,{I:100,k:5600,ang:type=="soft"?100:45,rot:0,tilt:30,x:-1.5});
+ if(type=="act")it.z=0;items.push(it);build(it);select(it.id);return it}
+function select(id){sel=id;panel();list();draw()}
+function list(){$("list").innerHTML="";items.forEach(i=>{const b=document.createElement("button");b.textContent=i.name;if(i.id==sel)b.className="on";b.onclick=()=>select(i.id);$("list").appendChild(b)})}
+function row(it,lab,key,mn,mx,st){const d=document.createElement("div");d.className="row";d.innerHTML=`<label>${lab}</label><input type=range min=${mn} max=${mx} step=${st} value=${it[key]}><span>${it[key]}</span>`;
+ const r=d.children[1];r.oninput=()=>{it[key]=+r.value;d.children[2].textContent=r.value;apply(it);info(it)};return d}
+function sel_(it,lab,opts,key,cb){const d=document.createElement("div");d.className="row";d.innerHTML=`<label>${lab}</label>`;const s=document.createElement("select");s.style.flex=1;opts.forEach((o,i)=>{const e=new Option(o.n||o,o.n?i:o);s.add(e)});
+ s.value=it[key];s.onchange=()=>{it[key]=+s.value;apply(it);info(it)};d.appendChild(s);return d}
+function info(it){const e=$("inf");if(!e||it.type!="cam")return;const v=fov(it),d=dof(it);e.innerHTML=`FOV אופקי ${v.hh.toFixed(1)}° · אנכי ${v.v.toFixed(1)}°<br>DOF: ${d.n.toFixed(2)} מ׳ – ${isFinite(d.f)?d.f.toFixed(2)+" מ׳":"∞"}<br><span class=tag>מחושב לפי גודל חיישן ומוקד (CoC = אלכסון/1500). נתוני החיישן הם דמו ויש לאמתם מול היצרן.</span>`}
+function panel(){const p=$("panel");p.innerHTML="";const it=items.find(i=>i.id==sel);if(!it){p.innerHTML="<small>בחר פריט.</small>";return}
+ const nm=document.createElement("input");nm.value=it.name;nm.style.width="100%";nm.oninput=()=>{it.name=nm.value;list()};p.append(nm);
+ if(it.type=="cam"){p.append(sel_(it,"מצלמה",CAMS,"cam"),sel_(it,"עדשה (mm)",FL,"f"),sel_(it,"T-stop",TS,"t"),row(it,"פוקוס (מ׳)","focus",.4,15,.1))}
+ if(it.l)p.append(row(it,"עוצמה","I",0,300,5),row(it,"Kelvin","k",2500,10000,100),row(it,"Beam°","ang",10,120,1));
+ if(!FLAT.includes(it.type))p.append(row(it,"גובה","y",.2,4,.05));
+ p.append(row(it,"X","x",-room.w/2,room.w/2,.05),row(it,"Z","z",-room.d/2,room.d/2,.05),row(it,"סיבוב","rot",-180,180,1));
+ if(!FLAT.includes(it.type))p.append(row(it,"Tilt","tilt",-60,89,1));
+ const del=document.createElement("button");del.textContent="מחק";del.onclick=()=>{scene.remove(it.g);items=items.filter(i=>i!=it);select(null)};p.append(del);
+ const d=document.createElement("small");d.id="inf";p.append(d);info(it)}
+// Floor plan
+const pc=$("plan"),px=pc.getContext("2d");let S=60,O={x:0,y:0},drag=null;
+function layout(){const w=pc.width=pc.clientWidth,h=pc.height=pc.clientHeight;S=Math.min((w-80)/room.w,(h-80)/room.d);O={x:w/2,y:h/2}}
+const P=(x,z)=>[O.x+x*S,O.y+z*S];
+function tag(t,x,y){px.font="600 11px system-ui";const w=px.measureText(t).width+12;px.fillStyle="#ffe46b";px.fillRect(x-w/2,y,w,17);px.fillStyle="#222";px.textAlign="center";px.fillText(t,x,y+12)}
+function drawPlan(){const w=pc.width,h=pc.height;px.fillStyle="#fff";px.fillRect(0,0,w,h);const [a,b]=P(-room.w/2,-room.d/2);
+ px.strokeStyle="#111";px.lineWidth=7;px.strokeRect(a,b,room.w*S,room.d*S);
+ px.fillStyle="#666";px.font="12px system-ui";px.textAlign="center";px.fillText(room.w+" m",O.x,b-14);px.save();px.translate(a-16,O.y);px.rotate(-Math.PI/2);px.fillText(room.d+" m",0,0);px.restore();
+ px.fillStyle="#111";px.fillRect(a,b+room.d*S+14,S,3);px.textAlign="left";px.fillText("1 m",a+S+6,b+room.d*S+19);
+ items.forEach(it=>{const [x,y]=P(it.x,it.z);px.save();px.translate(x,y);px.rotate(-it.rot*Math.PI/180);px.lineWidth=2;px.strokeStyle="#111";
+  if(it.type=="cam"){const e=fov(it).hh*Math.PI/360,L=S*3.2;px.fillStyle="rgba(80,150,255,.10)";px.beginPath();px.moveTo(0,0);px.lineTo(-Math.sin(e)*L,Math.cos(e)*L);px.lineTo(Math.sin(e)*L,Math.cos(e)*L);px.closePath();px.fill();px.strokeStyle="rgba(60,120,220,.55)";px.lineWidth=1;px.stroke();
+   px.strokeStyle="#111";px.lineWidth=2;px.fillStyle="#4a8ad8";px.fillRect(-12,-18,24,20);px.strokeRect(-12,-18,24,20);px.beginPath();px.moveTo(-8,2);px.lineTo(8,2);px.lineTo(13,15);px.lineTo(-13,15);px.closePath();px.fill();px.stroke()}
+  else if(it.l){const e=Math.min(it.ang/2,50)*Math.PI/180,L=S*2.6,g=px.createLinearGradient(0,0,0,L);g.addColorStop(0,"rgba(255,214,60,.8)");g.addColorStop(1,"rgba(255,230,120,0)");px.fillStyle=g;px.beginPath();px.moveTo(-8,0);px.lineTo(8,0);px.lineTo(Math.sin(e)*L+8,L);px.lineTo(-Math.sin(e)*L-8,L);px.closePath();px.fill();
+   if(it.type=="soft"){px.fillStyle="#2a2a2a";px.fillRect(-18,-8,36,10);px.strokeStyle="#888";px.lineWidth=1;for(let i=-14;i<=14;i+=7){px.beginPath();px.moveTo(i,-8);px.lineTo(i,2);px.stroke()}px.strokeStyle="#111";px.lineWidth=2;px.strokeRect(-18,-8,36,10)}
+   else{px.fillStyle="#3fae4a";px.fillRect(-9,-14,18,14);px.strokeRect(-9,-14,18,14);px.beginPath();px.moveTo(-9,0);px.lineTo(9,0);px.lineTo(14,8);px.lineTo(-14,8);px.closePath();px.fill();px.stroke()}}
+  else if(it.type=="flag"||it.type=="bounce"){px.fillStyle=it.type=="flag"?"#111":"#fff";px.strokeStyle=it.type=="flag"?"#111":"#888";px.fillRect(-S*.6,-S*.04,S*1.2,S*.08);px.strokeRect(-S*.6,-S*.04,S*1.2,S*.08)}
+  else if(it.type=="table"){px.fillStyle="#eee";px.fillRect(-S*.55,-S*.4,S*1.1,S*.8);px.strokeRect(-S*.55,-S*.4,S*1.1,S*.8)}
+  else{px.fillStyle="#6a8fc8";px.beginPath();px.ellipse(0,0,S*.24,S*.12,0,0,7);px.fill();px.stroke();px.fillStyle="#e8c4a0";px.beginPath();px.arc(0,S*.02,S*.09,0,7);px.fill();px.stroke();px.beginPath();px.moveTo(-3,S*.1);px.lineTo(0,S*.15);px.lineTo(3,S*.1);px.stroke()}
+  px.restore();if(it.id==sel){px.strokeStyle="#e03030";px.lineWidth=2;px.setLineDash([5,4]);px.strokeRect(x-22,y-22,44,44);px.setLineDash([])}
+  tag(it.name,x,y+(it.type=="table"?S*.45:28))})}
+function stand(){px.strokeStyle="#111";px.lineWidth=1.5;for(const a of [90,210,330]){const t=a*Math.PI/180;px.beginPath();px.moveTo(0,0);px.lineTo(Math.cos(t)*S*.3,Math.sin(t)*S*.3);px.stroke()}px.fillStyle="#fff";px.beginPath();px.arc(0,0,3.5,0,7);px.fill();px.stroke()}
+function beam(it,L){const e=Math.min(it.ang/2,50)*Math.PI/180,g=px.createLinearGradient(0,0,0,L);g.addColorStop(0,"rgba(255,208,40,.85)");g.addColorStop(1,"rgba(255,232,120,0)");px.fillStyle=g;px.beginPath();px.moveTo(-9,6);px.lineTo(9,6);px.lineTo(Math.sin(e)*L+9,L);px.lineTo(-Math.sin(e)*L-9,L);px.closePath();px.fill()}
+function drawPlan2(){const w=pc.width,h=pc.height;px.fillStyle="#fff";px.fillRect(0,0,w,h);const [a,b]=P(-room.w/2,-room.d/2),rw=room.w*S,rd=room.d*S;
+ px.lineJoin="miter";px.strokeStyle="#111";px.lineWidth=8;px.strokeRect(a,b,rw,rd);
+ [-.9,.8].forEach(p=>{const cy=O.y+p*S;px.fillStyle="#cde6fa";px.lineWidth=1.5;px.fillRect(a-7,cy-S*.5,14,S);px.strokeRect(a-7,cy-S*.5,14,S);px.beginPath();px.moveTo(a,cy-S*.5);px.lineTo(a,cy+S*.5);px.stroke()});
+ const dx=a+rw*.76,dy=b+rd;px.fillStyle="#fff";px.fillRect(dx,dy-6,S*.9,12);px.strokeStyle="#111";px.lineWidth=1.5;px.beginPath();px.moveTo(dx,dy);px.lineTo(dx,dy-S*.9);px.stroke();px.beginPath();px.arc(dx,dy,S*.9,-Math.PI/2,0);px.stroke();
+ px.fillStyle="#777";px.font="12px system-ui";px.textAlign="center";px.fillText(room.w+" m",O.x,b-16);px.save();px.translate(a-20,O.y);px.rotate(-Math.PI/2);px.fillText(room.d+" m",0,0);px.restore();
+ px.fillStyle="#111";px.fillRect(a,b+rd+18,S,3);px.textAlign="left";px.fillText("1 m",a+S+6,b+rd+24);
+ items.slice().sort((p,q)=>(p.l?0:1)-(q.l?0:1)).forEach(it=>{const [x,y]=P(it.x,it.z);px.save();px.translate(x,y);px.rotate(-it.rot*Math.PI/180);px.lineWidth=1.5;px.strokeStyle="#111";
+  if(it.type=="cam"){const e=fov(it).hh*Math.PI/360,L=S*3.4;px.fillStyle="rgba(90,160,255,.10)";px.beginPath();px.moveTo(0,10);px.lineTo(-Math.sin(e)*L,L);px.lineTo(Math.sin(e)*L,L);px.closePath();px.fill();px.strokeStyle="rgba(50,110,210,.6)";px.setLineDash([6,4]);px.stroke();px.setLineDash([]);
+   stand();px.strokeStyle="#111";px.fillStyle="#4a8ad8";px.fillRect(-13,-14,26,22);px.strokeRect(-13,-14,26,22);px.fillStyle="#2c5fa8";px.beginPath();px.moveTo(-8,8);px.lineTo(8,8);px.lineTo(12,20);px.lineTo(-12,20);px.closePath();px.fill();px.stroke();px.fillStyle="#fff";px.fillRect(-5,-8,10,6)}
+  else if(it.l){beam(it,S*2.8);stand();if(it.type=="soft"){px.fillStyle="#2b2b2b";px.beginPath();px.moveTo(-9,-6);px.lineTo(9,-6);px.lineTo(20,12);px.lineTo(-20,12);px.closePath();px.fill();px.stroke();px.strokeStyle="#999";px.lineWidth=1;for(let i=-16;i<=16;i+=6){px.beginPath();px.moveTo(i*.8,-2);px.lineTo(i,12);px.stroke()}px.strokeStyle="#111";px.lineWidth=1.5;px.strokeRect(-20,10,40,3)}
+   else{px.fillStyle="#3fae4a";px.beginPath();px.moveTo(-8,-10);px.lineTo(8,-10);px.lineTo(13,10);px.lineTo(-13,10);px.closePath();px.fill();px.stroke();px.beginPath();px.moveTo(-14,-2);px.lineTo(-14,10);px.moveTo(14,-2);px.lineTo(14,10);px.stroke()}}
+  else if(it.type=="flag"||it.type=="bounce"){const f=it.type=="flag";px.fillStyle=f?"#111":"#fff";px.strokeStyle=f?"#111":"#777";px.lineWidth=f?1:2;px.fillRect(-S*.6,-4,S*1.2,8);px.strokeRect(-S*.6,-4,S*1.2,8);px.save();px.translate(-S*.45,0);stand();px.restore();px.save();px.translate(S*.45,0);stand();px.restore()}
+  else if(it.type=="table"){px.fillStyle="#f3f3f3";px.fillRect(-S*.55,-S*.4,S*1.1,S*.8);px.strokeRect(-S*.55,-S*.4,S*1.1,S*.8);px.strokeRect(-S*.5,-S*.35,S*1,S*.7)}
+  else{px.fillStyle="#5f86c4";px.beginPath();px.ellipse(0,0,S*.25,S*.12,0,0,7);px.fill();px.stroke();px.beginPath();px.moveTo(-S*.22,0);px.lineTo(-S*.2,S*.32);px.moveTo(S*.22,0);px.lineTo(S*.2,S*.32);px.stroke();px.fillStyle="#e8c4a0";px.beginPath();px.arc(0,S*.02,S*.1,0,7);px.fill();px.stroke();px.beginPath();px.moveTo(-3,S*.11);px.lineTo(0,S*.17);px.lineTo(3,S*.11);px.stroke()}
+  px.restore();if(it.id==sel){px.strokeStyle="#e03030";px.lineWidth=2;px.setLineDash([5,4]);px.strokeRect(x-26,y-26,52,52);px.setLineDash([])}
+  tag(it.name,x,y+(it.type=="table"?S*.45:34))})}
+function draw(){if(view3)return;layout();drawPlan2();return}
+function drawOld(){layout();px.fillStyle="#f4f1ea";px.fillRect(0,0,pc.width,pc.height);
+ const [a,b]=P(-room.w/2,-room.d/2);px.strokeStyle="#222";px.lineWidth=4;px.strokeRect(a,b,room.w*S,room.d*S);
+ px.fillStyle="#555";px.font="12px sans-serif";px.textAlign="center";px.fillText(room.w+" מ׳",O.x,b-8);px.fillText(room.d+" מ׳",a-24,O.y);
+ items.forEach(it=>{const [x,y]=P(it.x,it.z),r=it.rot*Math.PI/180,dx=Math.sin(r),dz=Math.cos(r);
+  if(it.type=="cam"){const h=fov(it).hh*Math.PI/360;px.fillStyle="rgba(60,120,220,.15)";px.beginPath();px.moveTo(x,y);px.arc(x,y,S*3,Math.atan2(dz,dx)-h,Math.atan2(dz,dx)+h);px.fill();px.fillStyle="#3a7bd5";px.fillRect(x-9,y-7,18,14)}
+  else if(it.l){px.strokeStyle="#c8890a";px.lineWidth=2;px.beginPath();px.moveTo(x,y);px.lineTo(x+dx*S*1.6,y+dz*S*1.6);px.stroke();px.fillStyle="#e0a030";px.beginPath();px.arc(x,y,9,0,7);px.fill()}
+  else{px.fillStyle="#b08060";px.beginPath();px.arc(x,y,S*.22,0,7);px.fill()}
+  if(it.id==sel){px.strokeStyle="#e03030";px.lineWidth=2;px.strokeRect(x-14,y-14,28,28)}
+  px.fillStyle="#111";px.fillText(it.name,x,y+26)})}
+pc.onpointerdown=e=>{const r=pc.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;const h=items.find(i=>{const [x,y]=P(i.x,i.z);return Math.hypot(x-mx,y-my)<16});if(h){select(h.id);drag=h;pc.setPointerCapture(e.pointerId)}}
+pc.onpointermove=e=>{if(!drag)return;const r=pc.getBoundingClientRect();drag.x=Math.max(-room.w/2,Math.min(room.w/2,(e.clientX-r.left-O.x)/S));drag.z=Math.max(-room.d/2,Math.min(room.d/2,(e.clientY-r.top-O.y)/S));apply(drag)}
+pc.onpointerup=()=>{if(drag){drag=null;panel()}};
+// 3D picking
+const ray=new THREE.Raycaster();let dn=null;$("c3").onpointerdown=e=>dn=[e.clientX,e.clientY];
+$("c3").onpointerup=e=>{if(!dn||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>4)return;const r=$("c3").getBoundingClientRect();
+ ray.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)},cam3);
+ for(const h of ray.intersectObjects(items.map(i=>i.g),true)){const it=items.find(i=>{let o=h.object;while(o){if(o==i.g)return true;o=o.parent}return false});if(it){select(it.id);return}}};
+// UI wiring
+function tab(v){view3=v;$("c3").style.display=v?"block":"none";pc.style.display=v?"none":"block";$("t3").className=v?"on":"";$("tp").className=v?"":"on";draw()}
+$("t3").onclick=()=>tab(true);$("tp").onclick=()=>tab(false);
+$("addCam").onclick=()=>add("cam");$("addSpot").onclick=()=>add("spot");$("addSoft").onclick=()=>add("soft");$("addAct").onclick=()=>add("act");$("addFlag").onclick=()=>add("flag");$("addBnc").onclick=()=>add("bounce");$("addTbl").onclick=()=>add("table");
+$("mkRoom").onclick=()=>{const w=+$("rw").value,d=+$("rd").value,h=+$("rh").value;if(!(w>0&&d>0&&h>0))return alert("מידות לא תקינות");room={w,d,h};mkRoom()};
+$("glb").onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);new THREE.GLTFLoader().load(u,g=>{const m=g.scene;m.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true}});imported.push(m);scene.add(m);URL.revokeObjectURL(u)},undefined,()=>alert("שגיאה בפענוח הקובץ"))};
+$("save").onclick=()=>{try{localStorage.setItem("previz",JSON.stringify({room,items:items.map(({g,l,pc,...r})=>r)}));alert("נשמר")}catch(x){alert("השמירה נכשלה")}};
+$("load").onclick=()=>{try{const d=JSON.parse(localStorage.getItem("previz"));if(!d)return alert("אין שמירה");items.forEach(i=>scene.remove(i.g));room=d.room;items=d.items;uid=Math.max(0,...items.map(i=>i.id))+1;mkRoom();items.forEach(build);select(null)}catch(x){alert("הטעינה נכשלה")}};
+$("png").onclick=()=>{const w=view3;tab(false);setTimeout(()=>{const a=document.createElement("a");a.href=pc.toDataURL("image/png");a.download="floorplan.png";a.click();tab(w)},50)};
+document.addEventListener("keydown",e=>{if(e.target.tagName=="INPUT"||e.target.tagName=="SELECT")return;const it=items.find(i=>i.id==sel);if(it&&(e.key=="Delete"||e.key=="Backspace")){scene.remove(it.g);items=items.filter(i=>i!=it);select(null)}});
+function loop(){requestAnimationFrame(loop);if(view3){const c=$("stage");if($("c3").width!=c.clientWidth*devicePixelRatio){r3.setSize(c.clientWidth,c.clientHeight,false);cam3.aspect=c.clientWidth/c.clientHeight;cam3.updateProjectionMatrix()}r3.render(scene,cam3)}
+ const it=items.find(i=>i.id==sel&&i.type=="cam")||items.find(i=>i.type=="cam");if(it)rp.render(scene,it.pc);else rp.clear()}
+mkRoom();add("act");add("cam").z=-1.8;items[1].rot=0;items[1].z=-1.8;items[1].focus=1.8;apply(items[1]);const l=add("soft");l.x=-1.5;l.z=-1.2;l.rot=45;apply(l);const fg=add("flag");fg.x=1.4;fg.z=0;fg.rot=90;apply(fg);tab(false);select(items[1].id);
+window.onresize=draw;loop();
+</script></body></html>
