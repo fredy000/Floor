@@ -1,689 +1,411 @@
+initialScene();init3D();requestAnimationFrame(resizeAll);startReal3DEngine();
 
-<!doctype html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRAME/LAB – Studio Lite</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#101318;color:#eee;font-family:Arial,sans-serif}
-button,select,input{font:inherit}
-button{cursor:pointer;background:#292f38;color:#eee;border:1px solid #444d5b;border-radius:7px;padding:8px}
-button:hover{background:#374250}
-header{padding:13px 17px;display:flex;gap:12px;align-items:center;justify-content:space-between;background:#171c23;border-bottom:1px solid #303744}
-header strong{color:#f1ca7e;font-size:20px;letter-spacing:1px}
-header small{color:#929cac}
-#layout{display:grid;grid-template-columns:240px minmax(300px,1fr) 290px;min-height:calc(100vh - 64px);direction:ltr}
-aside,main{direction:rtl;min-width:0}
-aside{padding:15px;background:#1b2028;overflow:auto;border-inline:1px solid #2d3541}
-h2{font-size:15px;margin:8px 0 14px;color:#e9c47c}
-h3{font-size:12px;color:#bdc4ce;margin:18px 0 9px}
-label{display:block;font-size:12px;color:#c6cbd4;margin:12px 0 6px}
-input,select{width:100%;background:#242b35;color:#fff;border:1px solid #4a5360;border-radius:7px;padding:8px}
-input[type=range]{padding:0;accent-color:#e9c47c}
-input[type=file]{font-size:10px;max-width:100%}
-.wide{width:100%}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.muted{font-size:11px;line-height:1.5;color:#9ca8b8}
-.stage{display:grid;grid-template-rows:1fr 1fr;gap:10px;padding:12px;min-height:660px}
-section{min-height:0;position:relative;border:1px solid #414b57;border-radius:10px;overflow:hidden;background:#14191f}
-.cap{height:30px;padding:7px 12px;font:11px monospace;background:#252b33;color:#d4bb89;direction:ltr}
-canvas{display:block;width:100%;height:calc(100% - 30px);touch-action:none}
-#view{background:#23292e}
-#plan{background:#faf9f5;cursor:grab}
-.item{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px;background:#282f39;border-radius:6px;margin:6px 0;font-size:12px}
-.item button{padding:3px 7px}
-#msg{padding:9px;border:1px solid #61543a;border-radius:6px;color:#dcc797;font-size:11px;line-height:1.6;margin:12px 0}
-#status{font-size:11px;color:#a9c7a8}
-@media(max-width:850px){
- #layout{grid-template-columns:1fr;display:flex;flex-direction:column}
- aside{order:2}
- main{order:1}
- .stage{min-height:690px}
+/* ===== FRAME/LAB — APUTURE LIGHTING UPGRADE ===== */
+
+LIGHT_MODELS[7] = 'Aputure LS 1200d Pro';
+LIGHT_MODELS[8] = 'Aputure STORM 1200x';
+
+Object.assign(FIXTURE_DATA, {
+  0: {
+    name: 'Aputure LS 600x Pro',
+    kMin: 2700, kMax: 6500, kDef: 5600,
+    aMin: 55, aMax: 105, aDef: 55,
+    cri: '96+',
+    modes: [
+      {
+        name: 'Hyper-Reflector',
+        lux: 63900,
+        at: 1,
+        angle: 55,
+        n: Math.log(63900 / 5610) / Math.log(3)
+      },
+      {
+        name: 'Bare Bulb',
+        lux: 16060,
+        at: 1,
+        angle: 105,
+        n: 2
+      }
+    ],
+    note: 'Hyper-Reflector: 63,900 lux ב־1 מ׳ ו־5,610 lux ב־3 מ׳. ללא רפלקטור: 16,060 lux ב־1 מ׳.'
+  },
+
+  5: {
+    name: 'Aputure LS 300d II',
+    kMin: 5500, kMax: 5500, kDef: 5500,
+    aMin: 55, aMax: 55, aDef: 55,
+    cri: '96+',
+    modes: [
+      {
+        name: 'Reflector 55°',
+        lux: 55000,
+        at: 1,
+        angle: 55,
+        n: 2
+      },
+      {
+        name: 'Fresnel 2X',
+        lux: 80000,
+        at: 1,
+        angle: 55,
+        n: 2,
+        angleUnknown: true
+      }
+    ],
+    note: 'רפלקטור: כ־55,000 lux ב־1 מ׳. Fresnel 2X: עד 80,000 lux ב־1 מ׳. זווית הפרנל אינה ידועה.'
+  },
+
+  6: {
+    name: 'Aputure LS 600d Pro',
+    kMin: 5600, kMax: 5600, kDef: 5600,
+    aMin: 55, aMax: 105, aDef: 55,
+    cri: '96+',
+    modes: [
+      {
+        name: 'Reflector',
+        lux: 98500,
+        at: 1,
+        angle: 55,
+        n: 2
+      }
+    ],
+    note: 'כ־98,500 lux במרחק 1 מ׳ עם רפלקטור.'
+  },
+
+  7: {
+    name: 'Aputure LS 1200d Pro',
+    kMin: 5600, kMax: 5600, kDef: 5600,
+    aMin: 15, aMax: 105, aDef: 15,
+    cri: '95+',
+    modes: [
+      {
+        name: 'Narrow 15°',
+        lux: 83100,
+        at: 3,
+        angle: 15,
+        n: 2
+      }
+    ],
+    note: '83,100 lux במרחק 3 מ׳ עם Narrow Reflector.'
+  },
+
+  8: {
+    name: 'Aputure STORM 1200x',
+    kMin: 2500, kMax: 10000, kDef: 5600,
+    aMin: 45, aMax: 45, aDef: 45,
+    cri: '95+',
+    ssi: 87,
+    modes: [
+      {
+        name: 'Reflector 45°',
+        lux: 24000,
+        at: 3,
+        angle: 45,
+        n: 2
+      }
+    ],
+    note: 'כ־24,000 lux במרחק 3 מ׳ עם רפלקטור 45°.'
+  }
+});
+
+function frameLabLightMode(it) {
+  const fx = FIXTURE_DATA[it.fixture];
+
+  return fx?.modes?.[
+    clamp(
+      Math.floor(Number(it.lightMode) || 0),
+      0,
+      fx.modes.length - 1
+    )
+  ] || null;
 }
-</style>
-</head>
-<body>
-<header>
-<strong>FRAME/LAB</strong>
-<small>CINEMATOGRAPHY PREVIS · 2D / 3D</small>
-<button id="save">שמור פרויקט</button>
-<button id="load">טען פרויקט</button>
-<input id="loadfile" type="file" accept="application/json,.json" hidden>
-</header>
 
-<div id="layout">
-<aside>
-<h2>ספריית הציוד</h2>
-<div class="grid2">
-<button id="addCam">+ מצלמה</button>
-<button id="addLight">+ פנס</button>
-<button id="addMale">+ גבר</button>
-<button id="addFemale">+ אישה</button>
-</div>
+applyFixture = function(it) {
+  const fx = FIXTURE_DATA[it.fixture];
+  if (!fx) return;
 
-<h3>הדמויות המקוריות שלך</h3>
-<label>טען את מודל הגבר (Daniel GLB)</label>
-<input id="maleFile" type="file" accept=".glb,model/gltf-binary">
-<label>טען את מודל האישה (Maya GLB)</label>
-<input id="femaleFile" type="file" accept=".glb,model/gltf-binary">
-<div id="msg">הקוד לא מכיל את קובצי ה־GLB הכבדים. כדי לראות את הדמויות המקוריות, בחר כאן את הקבצים שהבאת. הדמויות נשארות סטטיות.</div>
-
-<h3>פריטים בסצנה</h3>
-<div id="items"></div>
-
-<h3>מידות החדר (מטרים)</h3>
-<div class="grid2">
-<div><label>רוחב</label><input id="roomW" type="number" step=".1" min="2" value="6.2"></div>
-<div><label>אורך</label><input id="roomD" type="number" step=".1" min="2" value="5"></div>
-</div>
-<button id="roomApply" class="wide">עדכן חדר</button>
-</aside>
-
-<main>
-<div class="stage">
-<section>
-<div class="cap">LIVE CAMERA MONITOR · <span id="info">35MM · T2.8</span></div>
-<canvas id="view"></canvas>
-</section>
-<section>
-<div class="cap">LIGHTING FLOOR PLAN · DRAG TO POSITION</div>
-<canvas id="plan"></canvas>
-</section>
-</div>
-</main>
-
-<aside>
-<h2>Inspector / Properties</h2>
-<div id="inspector"></div>
-<div id="status">טוען מנוע תלת־ממד...</div>
-<p class="muted">עוצמת האור מחושבת בקירוב לפי נתוני הפנסים. ההדמיה החזותית אינה סימולטור חשיפה מכויל. המודלים נטענים מקובצי GLB מקומיים.</p>
-</aside>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
-<script>
-'use strict';
-
-const $ = id => document.getElementById(id);
-
-const lamps = {
- 'Aputure LS 300d II': {
-  kelvin:[5500,5500],cri:'96+',
-  modes:[
-   ['Reflector',55,45000,1],
-   ['Fresnel 2X',15,80000,1]
-  ]
- },
- 'Aputure LS 600d Pro': {
-  kelvin:[5600,5600],cri:'96+',
-  modes:[['Reflector',55,98500,1]]
- },
- 'Aputure LS 600x Pro': {
-  kelvin:[2700,6500],cri:'96+',
-  modes:[
-   ['Bare bulb',105,16060,1],
-   ['Hyper Reflector',55,63900,1],
-   ['Hyper Reflector · 3m',55,5610,3]
-  ]
- },
- 'Aputure LS 1200d Pro': {
-  kelvin:[5600,5600],cri:'95+',
-  modes:[['Narrow',15,83100,3]]
- },
- 'Aputure STORM 1200x': {
-  kelvin:[2500,10000],cri:'95+',
-  modes:[['Reflector 45°',45,24000,3]]
- }
+  it.k = fx.kDef;
+  it.lightMode = 0;
+  it.ang = fx.aDef;
+  it._lightPatchMode = 0;
 };
 
-let room={w:6.2,d:5};
-let chosen=null,count=0;
-const entries=[];
-const avatars={male:null,female:null};
-let renderer,scene,perspective,dragId=null;
+/* ===== LUX CALCULATION ===== */
 
-const rad=v=>v*Math.PI/180;
+fixtureLux = function(it, d) {
+  const fx = FIXTURE_DATA[it.fixture];
+  const mode = frameLabLightMode(it);
 
-function item(type,x,z){
- return {
-  id:++count,type,
-  name:type==='cam'?'מצלמה':type==='light'?'פנס':type==='male'?'דמות גבר':'דמות אישה',
-  x,z,
-  y:type==='light'?2.2:type==='cam'?1.5:0,
-  yaw:type==='cam'?0:180,
-  power:100,k:5600,
-  fixture:'Aputure LS 600x Pro',
-  modifier:1,focal:35,aperture:2.8
- };
-}
+  if (!fx || !mode) return null;
 
-entries.push(
- item('cam',0,2),
- item('light',-1,0),
- item('male',-.8,-.8),
- item('female',.8,-.8)
-);
-chosen=entries[1].id;
-
-function selected(){return entries.find(it=>it.id===chosen)}
-function camera(){return entries.find(it=>it.type==='cam')}
-
-function kelvinToColor(K){
- let r,g,b,t=K/100;
- if(t<=66){
-  r=255;
-  g=99.4708*Math.log(t)-161.1196;
-  b=t<=19?0:138.5177*Math.log(t-10)-305.0448;
- }else{
-  r=329.6987*Math.pow(t-60,-.1332);
-  g=288.1222*Math.pow(t-60,-.0755);
-  b=255;
- }
- return new THREE.Color(`rgb(${[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v)))).join(',')})`);
-}
-
-function makeTag(text){
- const c=document.createElement('canvas');
- c.width=256;c.height=96;
- const ctx=c.getContext('2d');
- ctx.fillStyle='#1c2734';
- ctx.fillRect(0,0,256,96);
- ctx.fillStyle='#fff';
- ctx.font='bold 32px Arial';
- ctx.textAlign='center';
- ctx.fillText(text,128,57);
- const tex=new THREE.CanvasTexture(c);
- const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex}));
- sp.scale.set(.9,.34,1);
- sp.position.y=1.7;
- return sp;
-}
-
-function newWorld(){
- scene=new THREE.Scene();
- scene.background=new THREE.Color('#303842');
- scene.add(new THREE.HemisphereLight(0xf4f5ff,0x4e5660,.7));
-
- const floor=new THREE.Mesh(
-  new THREE.PlaneGeometry(room.w,room.d),
-  new THREE.MeshStandardMaterial({color:'#8f938f',roughness:.92})
- );
- floor.rotation.x=-Math.PI/2;
- floor.receiveShadow=true;
- scene.add(floor);
-
- const grid=new THREE.GridHelper(
-  Math.max(room.w,room.d),
-  Math.round(Math.max(room.w,room.d)*2),
-  0x555e67,0x6f7780
- );
- grid.position.y=.012;
- scene.add(grid);
-
- const box=new THREE.LineSegments(
-  new THREE.EdgesGeometry(new THREE.BoxGeometry(room.w,2.8,room.d)),
-  new THREE.LineBasicMaterial({color:'#8794a0',transparent:true,opacity:.25})
- );
- box.position.y=1.4;
- scene.add(box);
-}
-
-function createActor(it){
- const group=new THREE.Group();
- group.position.set(it.x,0,it.z);
- group.rotation.y=rad(it.yaw);
-
- const saved=avatars[it.type];
-
- if(saved){
-  const model=THREE.SkeletonUtils
-   ? THREE.SkeletonUtils.clone(saved)
-   : saved.clone(true);
-
-  const bounds=new THREE.Box3().setFromObject(model);
-  const dim=bounds.getSize(new THREE.Vector3());
-  const scale=1.72/Math.max(dim.y,.001);
-
-  model.scale.setScalar(scale);
-  model.position.set(
-   -(bounds.min.x+bounds.max.x)*scale/2,
-   -bounds.min.y*scale,
-   -(bounds.min.z+bounds.max.z)*scale/2
+  const angle = clamp(
+    Number(it.ang) || fx.aDef,
+    fx.aMin,
+    fx.aMax
   );
 
-  model.traverse(o=>{
-   if(o.isMesh){
-    o.castShadow=true;
-    o.receiveShadow=true;
-    o.frustumCulled=false;
-   }
-  });
-  group.add(model);
- }else{
-  const marker=new THREE.Mesh(
-   new THREE.CylinderGeometry(.19,.19,.03,24),
-   new THREE.MeshBasicMaterial({color:it.type==='male'?0x6ca9da:0xd6a1ad})
+  const refAngle = mode.angle || fx.aDef;
+
+  const concentration =
+    (1 - Math.cos(rad(refAngle / 2))) /
+    (1 - Math.cos(rad(angle / 2)));
+
+  return (
+    mode.lux *
+    Math.pow(mode.at / Math.max(0.3, d), mode.n || 2) *
+    concentration *
+    clamp(Number(it.I) / 100, 0, 1)
   );
-  group.add(marker);
-  group.add(makeTag('בחר GLB'));
- }
- scene.add(group);
-}
-
-function createLight(it){
- const lamp=lamps[it.fixture];
- const p=lamp.modes[it.modifier]||lamp.modes[0];
- const color=kelvinToColor(it.k);
- const lux=p[2]*Math.pow(p[3]/3,2)*(it.power/100);
-
- const spot=new THREE.SpotLight(
-  color,Math.min(12,Math.max(.05,lux/600)),
-  rad(p[1]/2),0,.45,1
- );
-
- spot.position.set(it.x,it.y,it.z);
- spot.target.position.set(
-  it.x+Math.sin(rad(it.yaw))*2,
-  1.3,
-  it.z-Math.cos(rad(it.yaw))*2
- );
- spot.castShadow=true;
- spot.shadow.mapSize.set(1024,1024);
- scene.add(spot,spot.target);
-
- const g=new THREE.Group();
- g.add(new THREE.Mesh(
-  new THREE.BoxGeometry(.16,.14,.23),
-  new THREE.MeshStandardMaterial({color:0xa9aa9d,emissive:color,emissiveIntensity:.2})
- ));
- g.position.copy(spot.position);
- scene.add(g);
-}
-
-function rebuild(){
- if(!renderer)return;
- newWorld();
- for(const it of entries){
-  if(it.type==='male'||it.type==='female')createActor(it);
-  else if(it.type==='light')createLight(it);
- }
- updateCamera();
-}
-
-function updateCamera(){
- if(!perspective)return;
- const cam=camera();
- if(!cam)return;
- perspective.fov=2*Math.atan(18/(2*cam.focal))*180/Math.PI;
- perspective.aspect=Math.max(.1,$('view').clientWidth/$('view').clientHeight);
- perspective.near=.05;
- perspective.far=80;
- perspective.updateProjectionMatrix();
- perspective.position.set(cam.x,cam.y,cam.z);
-
- const angle=rad(cam.yaw);
- perspective.lookAt(
-  cam.x+Math.sin(angle)*4,
-  cam.y,
-  cam.z-Math.cos(angle)*4
- );
- $('info').textContent=`${cam.focal}MM · T${cam.aperture}`;
-}
-
-function animate(){
- requestAnimationFrame(animate);
- if(renderer){
-  updateCamera();
-  renderer.render(scene,perspective);
- }
-}
-
-function init(){
- if(!window.THREE||!THREE.GLTFLoader){
-  $('status').textContent='Three.js לא נטען. נדרש חיבור לאינטרנט.';
-  return;
- }
- try{
-  renderer=new THREE.WebGLRenderer({
-   canvas:$('view'),
-   antialias:true,
-   preserveDrawingBuffer:true
-  });
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.shadowMap.enabled=true;
-  renderer.outputEncoding=THREE.sRGBEncoding;
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  perspective=new THREE.PerspectiveCamera(40,1,.05,80);
-  rebuild();resize();animate();
-  $('status').textContent='✓ המנוע מוכן';
- }catch(err){
-  $('status').textContent='שגיאה בהפעלת התלת־ממד: '+err.message;
- }
-}
-
-function resize(){
- const c=$('view'),p=$('plan');
- if(renderer)renderer.setSize(c.clientWidth,c.clientHeight,false);
- const dpr=devicePixelRatio||1;
- p.width=Math.max(1,p.clientWidth*dpr);
- p.height=Math.max(1,p.clientHeight*dpr);
- drawPlan();
-}
-
-function coords(it){
- const c=$('plan');
- const size=Math.min(c.width/(room.w+1.1),c.height/(room.d+1.1));
- return {x:c.width/2+it.x*size,y:c.height/2+it.z*size,size};
-}
-
-function drawPlan(){
- const c=$('plan'),ctx=c.getContext('2d');
- if(!ctx)return;
- ctx.clearRect(0,0,c.width,c.height);
- const s=Math.min(c.width/(room.w+1.1),c.height/(room.d+1.1));
-
- ctx.save();
- ctx.translate(c.width/2,c.height/2);
- ctx.fillStyle='#fdfaf3';
- ctx.fillRect(-room.w*s/2,-room.d*s/2,room.w*s,room.d*s);
- ctx.lineWidth=Math.max(2,s*.025);
- ctx.strokeStyle='#222';
- ctx.strokeRect(-room.w*s/2,-room.d*s/2,room.w*s,room.d*s);
- ctx.strokeStyle='#e8e4db';
- ctx.lineWidth=1;
-
- for(let x=-Math.floor(room.w);x<=room.w;x++){
-  ctx.beginPath();ctx.moveTo(x*s,-room.d*s/2);
-  ctx.lineTo(x*s,room.d*s/2);ctx.stroke();
- }
- for(let z=-Math.floor(room.d);z<=room.d;z++){
-  ctx.beginPath();ctx.moveTo(-room.w*s/2,z*s);
-  ctx.lineTo(room.w*s/2,z*s);ctx.stroke();
- }
- ctx.restore();
-
- for(const it of entries){
-  const p=coords(it),a=rad(it.yaw);
-
-  if(it.type==='light'){
-   const spec=lamps[it.fixture];
-   const beam=rad((spec.modes[it.modifier]||spec.modes[0])[1]/2);
-   ctx.fillStyle='#eabc5a20';
-   ctx.strokeStyle='#e6ae36aa';
-   ctx.beginPath();ctx.moveTo(p.x,p.y);
-   for(let i=0;i<=24;i++){
-    const angle=a-beam+2*beam*i/24;
-    ctx.lineTo(p.x+Math.sin(angle)*s*2,p.y-Math.cos(angle)*s*2);
-   }
-   ctx.closePath();ctx.fill();ctx.stroke();
-  }
-
-  ctx.beginPath();
-  ctx.arc(p.x,p.y,Math.max(8,s*.12),0,Math.PI*2);
-  ctx.fillStyle=it.type==='cam'?'#5e9bd7':
-   it.type==='light'?'#ddb657':it.type==='male'?'#85add0':'#d5a4ae';
-  ctx.fill();
-  ctx.lineWidth=it.id===chosen?4:1;
-  ctx.strokeStyle=it.id===chosen?'#213b65':'#4e555e';
-  ctx.stroke();
-
-  ctx.strokeStyle='#25313e';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(p.x,p.y);
-  ctx.lineTo(p.x+Math.sin(a)*s*.3,p.y-Math.cos(a)*s*.3);
-  ctx.stroke();
-  ctx.font=`${Math.max(10,s*.12)}px Arial`;
-  ctx.fillStyle='#30383c';
-  ctx.fillText(it.name,p.x+12,p.y-9);
- }
-}
-
-function refresh(){
- const list=$('items');
- list.innerHTML='';
- for(const it of entries){
-  const div=document.createElement('div');
-  div.className='item';
-  const name=document.createElement('span');
-  name.textContent=`${it.name} #${it.id}`;
-  div.append(name);
-  const btn=document.createElement('button');
-  btn.textContent='בחר';
-  btn.onclick=()=>{
-   chosen=it.id;refresh();drawPlan();
-  };
-  div.append(btn);list.append(div);
- }
- renderInspector();
-}
-
-function field(text,id,type,value,options){
- const label=document.createElement('label');
- label.textContent=text;
- const input=document.createElement(type==='select'?'select':'input');
- input.id=id;
-
- if(type==='select'){
-  for(const [v,txt] of options){
-   const o=document.createElement('option');
-   o.value=v;o.textContent=txt;input.append(o);
-  }
-  input.value=value;
- }else{
-  input.type=type;input.value=value;
-  if(type==='number')input.step='.1';
-  if(type==='range'){
-   input.min=0;input.max=100;
-  }
- }
- label.append(input);
- return {label,input};
-}
-
-function renderInspector(){
- const box=$('inspector');
- box.replaceChildren();
- const it=selected();
- if(!it){
-  box.textContent='בחר פריט';
-  return;
- }
- const title=document.createElement('h3');
- title.textContent=it.name;
- box.append(title);
-
- function control(label,key,type,min,max){
-  const f=field(label,'field_'+key,type,it[key]);
-  if(min!==undefined)f.input.min=min;
-  if(max!==undefined)f.input.max=max;
-  f.input.oninput=()=>{
-   it[key]=+f.input.value;
-   rebuild();drawPlan();
-  };
-  box.append(f.label);
- }
-
- control('מיקום X (מטר)','x','number',-20,20);
- control('מיקום Z (מטר)','z','number',-20,20);
- control('כיוון אופקי (מעלות)','yaw','number',-360,360);
-
- if(it.type==='cam'){
-  control('גובה מצלמה','y','number',0,4);
-  control('אורך מוקד (mm)','focal','number',12,250);
-  control('צמצם T','aperture','number',1,22);
- }
-
- if(it.type==='light'){
-  const select=field('דגם פנס','fixture','select',
-   it.fixture,Object.keys(lamps).map(n=>[n,n]));
-  select.input.onchange=()=>{
-   it.fixture=select.input.value;
-   it.modifier=0;
-   it.k=lamps[it.fixture].kelvin[1];
-   rebuild();refresh();
-  };
-  box.append(select.label);
-
-  const spec=lamps[it.fixture];
-  const mod=field('רפלקטור / אביזר','mod','select',
-   it.modifier,spec.modes.map((m,i)=>[i,m[0]]));
-  mod.input.onchange=()=>{
-   it.modifier=+mod.input.value;
-   rebuild();refresh();
-  };
-  box.append(mod.label);
-
-  control('גובה הפנס','y','number',.2,5);
-  control('עוצמה (%)','power','range',0,100);
-
-  const k=field('טמפרטורת צבע (K)','k','number',it.k);
-  k.input.min=spec.kelvin[0];
-  k.input.max=spec.kelvin[1];
-  k.input.onchange=()=>{
-   it.k=Math.max(spec.kelvin[0],
-    Math.min(spec.kelvin[1],+k.input.value));
-   rebuild();
-  };
-  box.append(k.label);
-
-  const p=spec.modes[it.modifier]||spec.modes[0];
-  const data=document.createElement('p');
-  const lux3=p[2]*Math.pow(p[3]/3,2)*it.power/100;
-  data.className='muted';
-  data.textContent=`CRI ${spec.cri} · אלומה ${p[1]}° · אומדן ${Math.round(lux3).toLocaleString()} Lux ב־3 מטר`;
-  box.append(data);
- }
-
- const remove=document.createElement('button');
- remove.className='wide';
- remove.textContent='מחק פריט';
- remove.onclick=()=>{
-  if(it.type==='cam'&&entries.filter(x=>x.type==='cam').length===1){
-   alert('חייבת להישאר לפחות מצלמה אחת');return;
-  }
-  entries.splice(entries.indexOf(it),1);
-  chosen=entries[0]?.id;
-  rebuild();refresh();drawPlan();
- };
- box.append(remove);
-}
-
-function add(type){
- const obj=item(type,Math.random()*.8-.4,Math.random()*.8-.4);
- entries.push(obj);chosen=obj.id;
- rebuild();refresh();drawPlan();
-}
-$('addCam').onclick=()=>add('cam');
-$('addLight').onclick=()=>add('light');
-$('addMale').onclick=()=>add('male');
-$('addFemale').onclick=()=>add('female');
-
-$('roomApply').onclick=()=>{
- room.w=Math.max(2,+$('roomW').value||6.2);
- room.d=Math.max(2,+$('roomD').value||5);
- rebuild();drawPlan();
 };
 
-function loadAvatar(file,kind){
- if(!file)return;
- if(!window.THREE||!THREE.GLTFLoader){
-  alert('מנוע התלת־ממד טרם נטען');return;
- }
- const reader=new FileReader();
- reader.onload=()=>{
-  new THREE.GLTFLoader().parse(
-   reader.result,'',
-   gltf=>{
-    avatars[kind]=gltf.scene;
-    rebuild();
-    $('msg').textContent=`✓ ${kind==='male'?'Daniel':'Maya'} נטען בהצלחה. מודל GLB סטטי עם החומרים המקוריים.`;
-   },
-   err=>$('msg').textContent='תקלה בפענוח GLB: '+err.message
+/* ===== 3D LIGHT INTENSITY ===== */
+
+fixtureGain = function(it) {
+  const lux = fixtureLux(it, 3);
+
+  if (lux === null) {
+    return Math.max(0, Number(it.I)) / 44;
+  }
+
+  return clamp(
+    2.05 * Math.pow(Math.max(0, lux) / 5610, 0.55),
+    0,
+    6
   );
- };
- reader.readAsArrayBuffer(file);
+};
+
+/* ===== LIGHT DIRECTION AND ACTOR ===== */
+
+function frameLabActorLux(it, actor) {
+  const dx = actor.x - it.x;
+  const dy = 1.52 - it.y;
+  const dz = actor.z - it.z;
+
+  const d = Math.max(
+    0.01,
+    Math.hypot(dx, dy, dz)
+  );
+
+  const direction = cameraDirection(it);
+
+  const dot = clamp(
+    (
+      dx * direction.x +
+      dy * direction.y +
+      dz * direction.z
+    ) / d,
+    -1,
+    1
+  );
+
+  const offset = Math.acos(dot);
+  const half = rad(Math.max(1, it.ang) / 2);
+
+  const coverage = clamp(
+    (half - offset) / Math.max(0.015, half * 0.12),
+    0,
+    1
+  );
+
+  return {
+    distance: d,
+    lux: (fixtureLux(it, d) || 0) * coverage,
+    inBeam: coverage > 0
+  };
 }
 
-$('maleFile').onchange=e=>loadAvatar(e.target.files[0],'male');
-$('femaleFile').onchange=e=>loadAvatar(e.target.files[0],'female');
+/* ===== LIGHT INFORMATION PANEL ===== */
 
-$('save').onclick=()=>{
- const blob=new Blob([JSON.stringify({room,entries,count},null,2)],
-  {type:'application/json'});
- const url=URL.createObjectURL(blob);
- const a=document.createElement('a');
- a.href=url;a.download='FrameLab-project.json';a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
-};
+function frameLabLightingReadout(it) {
+  const fx = FIXTURE_DATA[it.fixture];
 
-$('load').onclick=()=>$('loadfile').click();
-$('loadfile').onchange=e=>{
- const f=e.target.files[0];if(!f)return;
- f.text().then(t=>{
-  try{
-   const data=JSON.parse(t);
-   if(!Array.isArray(data.entries))throw Error('פורמט לא תקין');
-   room=data.room;
-   entries.splice(0,entries.length,...data.entries);
-   count=data.count||Math.max(0,...entries.map(x=>x.id));
-   chosen=entries[0]?.id;
-   $('roomW').value=room.w;
-   $('roomD').value=room.d;
-   rebuild();refresh();drawPlan();
-  }catch(err){alert(err.message)}
- });
-};
+  if (!fx) {
+    return '<div class="notice">לדגם הזה אין נתוני Lux מכוילים; התצוגה יחסית.</div>';
+  }
 
-const plan=$('plan');
+  const mode = frameLabLightMode(it);
+  const lux3 = fixtureLux(it, 3) || 0;
 
-function eventPt(e){
- const r=plan.getBoundingClientRect();
- const factor=plan.width/r.width;
- return {
-  x:(e.clientX-r.left)*factor,
-  y:(e.clientY-r.top)*factor
- };
+  const actor = state.items.find(
+    x => x.type === 'actor'
+  );
+
+  const hit = actor
+    ? frameLabActorLux(it, actor)
+    : null;
+
+  const num = n =>
+    Math.round(n).toLocaleString('en-US');
+
+  return `
+    <div class="notice">
+      <b>${fx.name}</b>
+      · CRI ${fx.cri}
+      ${fx.ssi ? ' · SSI ' + fx.ssi : ''}
+
+      <div>
+        3 מ׳ על ציר הפנס:
+        <b>≈ ${num(lux3)} lux</b>
+        · ${Math.round(it.I)}% עוצמה
+      </div>
+
+      ${hit ? `
+        <div>
+          על הדמות:
+          <b>≈ ${num(hit.lux)} lux</b>
+          · ${round(hit.distance, 1)} מ׳
+          ${hit.inBeam ? '' : ' · מחוץ לאלומה'}
+        </div>
+      ` : ''}
+
+      <div>${fx.note}</div>
+
+      ${mode?.angleUnknown
+        ? '<div>זווית Fresnel כאן להמחשה בלבד.</div>'
+        : ''}
+
+      <div>
+        זהו אומדן לפי מרחק וכיוון,
+        ולא מדידה או סימולציית חשיפה מכוילת.
+        ${it.type === 'soft'
+          ? 'אין כאן מדידת Lux נפרדת לסופטבוקס.'
+          : ''}
+      </div>
+    </div>
+  `;
 }
 
-plan.onpointerdown=e=>{
- const pt=eventPt(e);
- const hits=entries
-  .map(it=>({it,...coords(it)}))
-  .filter(x=>Math.hypot(x.x-pt.x,x.y-pt.y)<
-   22*(plan.width/Math.max(1,plan.clientWidth)));
+/* ===== LIGHT CONTROLS ===== */
 
- if(hits.length){
-  chosen=hits[hits.length-1].it.id;
-  dragId=chosen;
-  plan.setPointerCapture(e.pointerId);
-  refresh();drawPlan();
- }
+lightExtra = function(it) {
+  const fx = FIXTURE_DATA[it.fixture];
+
+  const kMin = fx ? fx.kMin : 2700;
+  const kMax = fx ? fx.kMax : 10000;
+
+  const aMin = fx ? fx.aMin : 10;
+  const aMax = fx ? fx.aMax : 120;
+
+  it.k = clamp(Number(it.k) || 5600, kMin, kMax);
+  it.ang = clamp(Number(it.ang) || 55, aMin, aMax);
+
+  const fixed = (label, text) => `
+    <div class="prop">
+      <div class="propHeader">
+        <label>${label}</label>
+        <output>${text}</output>
+      </div>
+    </div>
+  `;
+
+  let html = '';
+
+  if (fx?.modes?.length > 1) {
+    html += propSelect(
+      it,
+      'lightMode',
+      'רפלקטור / אביזר',
+      fx.modes.map((m, i) => [i, m.name])
+    );
+  }
+
+  html += kMin === kMax
+    ? fixed('טמפרטורת צבע', `${kMin} K · קבוע`)
+    : propRange(
+        it, 'k', 'טמפרטורת צבע',
+        kMin, kMax, 100, ' K'
+      );
+
+  html += aMin === aMax
+    ? fixed('זווית אלומה', `${aMin}° · קבועה`)
+    : propRange(
+        it, 'ang', 'זווית אלומה',
+        aMin, aMax, 1, '°'
+      );
+
+  return html +
+    '<div id="frameLabLightReadout">' +
+    frameLabLightingReadout(it) +
+    '</div>';
 };
 
-plan.onpointermove=e=>{
- if(!dragId)return;
- const it=entries.find(x=>x.id===dragId);
- if(!it)return;
- const pt=eventPt(e),size=coords(it).size;
- it.x=Math.max(-room.w/2,Math.min(room.w/2,
-  (pt.x-plan.width/2)/size));
- it.z=Math.max(-room.d/2,Math.min(room.d/2,
-  (pt.y-plan.height/2)/size));
- rebuild();drawPlan();
+/* ===== PRESERVE EXISTING 3D RENDERER ===== */
+
+const frameLabOldApplyWorldItem = applyWorldItem;
+
+applyWorldItem = function(it) {
+  frameLabOldApplyWorldItem(it);
+
+  if (
+    !worldReady ||
+    !['soft', 'spot', 'tube'].includes(it.type)
+  ) return;
+
+  const light = objects.get(it.id)?.userData?.light;
+
+  if (light) {
+    light.intensity = fixtureGain(it);
+  }
 };
 
-plan.onpointerup=()=>{
- dragId=null;refresh();
+/* ===== PRESERVE EXISTING 2D PLAN ===== */
+
+const frameLabOldDrawBeam = drawBeam;
+
+drawBeam = function(ctx, p, it, scale) {
+  ctx.save();
+
+  ctx.globalAlpha = clamp(
+    Number(it.I) / 100,
+    0,
+    1
+  );
+
+  frameLabOldDrawBeam(ctx, p, it, scale);
+
+  ctx.restore();
 };
 
-window.addEventListener('resize',resize);
-refresh();
+/* ===== LIVE UPDATES ===== */
 
-if(window.THREE&&THREE.GLTFLoader)init();
-else $('status').textContent='יש צורך באינטרנט כדי לטעון את Three.js';
-</script>
-</body>
-</html>
+const frameLabOldOnItemUpdate = onItemUpdate;
+
+onItemUpdate = function(it, rebuildPanel = true) {
+  const lighting =
+    ['soft', 'spot', 'tube'].includes(it.type);
+
+  let modeChanged = false;
+
+  if (
+    lighting &&
+    it._lightPatchMode !== it.lightMode
+  ) {
+    const mode = frameLabLightMode(it);
+
+    if (mode?.angle) {
+      it.ang = mode.angle;
+    }
+
+    it._lightPatchMode = it.lightMode;
+    modeChanged = true;
+  }
+
+  frameLabOldOnItemUpdate(it, rebuildPanel);
+
+  if (
+    lighting &&
+    modeChanged &&
+    !rebuildPanel
+  ) {
+    renderInspector();
+  } else if (lighting) {
+    const panel = $('frameLabLightReadout');
+
+    if (panel) {
+      panel.innerHTML =
+        frameLabLightingReadout(it);
+    }
+  }
+};
+
+/* ===== END OF LIGHTING UPGRADE ===== */
